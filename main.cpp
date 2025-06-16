@@ -85,7 +85,7 @@ void gen_set(int pop, int itr, RobotInfo robot, CSVWriter& writer){
         optima.best_gene[i] = normalize_angle(optima.best_gene[i]);
     }
     vector<float> inputLayer = robot.joint_angle;
-    vector<float> posVector = {robot.init_pos.x,robot.init_pos.y,robot.init_pos.z};
+    vector<float> posVector = {robot.destination.x,robot.destination.y,robot.destination.z};
     inputLayer.insert(inputLayer.end(),posVector.begin(),posVector.end());
     vector<float> outputLayer = optima.best_gene;
     string misc = optima.name; 
