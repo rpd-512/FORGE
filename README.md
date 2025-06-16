@@ -119,6 +119,8 @@ FORGE/
 ├── Makefile                  # Makefile build
 ├── CMakeLists.txt            # CMake build script
 ├── example_dh_parameters/    # Example YAML configurations
+│   │── fanucm20ia.yaml
+│   │── tm5_700.yaml
 │   └── kawasaki_bx200l.yaml
 └── README.md                 # You're reading it!
 ```
@@ -154,3 +156,12 @@ This project is released under the [MIT License](LICENSE).
 
 **Rhiddhi Prasad Das**  
 Built for research in robotic inverse kinematics and optimization.
+
+## 🙌 Testers
+Thanks to the following people for helping test the program:
+
+- @imon1207
+- @tiya-513
+- @SLSi14
+- @Shivangid2904
+- @Ari-gay-tor
