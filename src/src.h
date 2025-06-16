@@ -129,6 +129,13 @@ Matrix4d dh_transform(const dh_param& dhp, double theta_deg) {
     return T;
 }
 
+double normalize_angle(double angle) {
+    angle = fmod(angle + 180.0, 360.0);
+    if (angle < 0)
+        angle += 360.0;
+    return angle - 180.0;
+}
+
 vector<position3D> forward_kinematics(const vector<float>& theta, const RobotInfo& robot) {
     Matrix4d T = Matrix4d::Identity();
     vector<position3D> joint_positions;
