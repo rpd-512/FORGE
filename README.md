@@ -119,8 +119,7 @@ FORGE/
 ├── Makefile                  # Makefile build
 ├── CMakeLists.txt            # CMake build script
 ├── example_dh_parameters/    # Example YAML configurations
-│   ├── kawasaki_bx200l.yaml
-│   └── fanuc.yaml
+│   └── kawasaki_bx200l.yaml
 └── README.md                 # You're reading it!
 ```
 
