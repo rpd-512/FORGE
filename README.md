@@ -129,15 +129,15 @@ FORGE/
 
 After running an algorithm, FORGE generates a `.csv` file logging each inverse kinematics attempt with the following structure:
 
-| ang1 | ang2 | ang3 | ang4 | ang5 | ang6 | pos_x | pos_y | pos_z | out_1 | out_2 | out_3 | out_4 | out_5 | out_6 |
+| i1 | i2 | i3 | i4 | i5 | i6 | i7 | i8 | i9 | o1 | o2 | o3 | o4 | o5 | o6 |
 |------|------|------|------|------|------|--------|--------|--------|--------|--------|--------|--------|--------|--------|
 | 0.12 | 0.35 | 0.78 | -0.2 | 1.05 | 0.66 | 500.0  | 200.0  | 300.0  | 0.11   | 0.33   | 0.80   | -0.21  | 1.04   | 0.65   |
 
 ### Column Details:
 
-- **ang1–ang6**: Initial joint angles provided as input to the solver.
-- **pos_x, pos_y, pos_z**: Desired 3D end-effector position (target).
-- **out_1–out_6**: Output joint angles predicted by the solver to achieve the target.
+- **i1–i6**: Initial joint angles provided as input to the solver.
+- **i7, i8, i9**: Desired 3D end-effector position (target).
+- **o1-o6**: Output joint angles predicted by the solver to achieve the target.
 
 These CSV files are useful for:
 - Evaluating solver accuracy (e.g., how close output angles reach the target)
@@ -152,6 +152,13 @@ This project is released under the [MIT License](LICENSE).
 
 ---
 
+## 📊 Dataset on Kaggle
+
+You can explore and download the dataset used for training and evaluation here:
+
+🔗 [FORGE Inverse Kinematics Dataset on Kaggle](https://www.kaggle.com/rhiddhiprasaddas/minimum-angular-deviation-inverse-kinematics)
+
+
 ## 👨‍🔬 Author
 
 **Rhiddhi Prasad Das**  
@@ -160,8 +167,8 @@ Built for research in robotic inverse kinematics and optimization.
 ## 🙌 Testers
 Thanks to the following people for helping test the program:
 
+- @Ari-gay-tor
 - @imon1207
 - @tiya-513
 - @SLSi14
 - @Shivangid2904
-- @Ari-gay-tor
