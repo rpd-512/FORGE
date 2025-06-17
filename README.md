@@ -157,7 +157,7 @@ This project is released under the [MIT License](LICENSE).
 
 You can explore and download the dataset used for training and evaluation here:
 
-🔗 [FORGE Inverse Kinematics Dataset on Kaggle](https://www.kaggle.com/rhiddhiprasaddas/minimum-angular-deviation-inverse-kinematics)
+🔗 [FORGE Inverse Kinematics Dataset on Kaggle](https://www.kaggle.com/datasets/rhiddhiprasaddas/forge-ik-2025/)
 
 
 ## 👨‍🔬 Author
