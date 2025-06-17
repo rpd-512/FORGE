@@ -65,23 +65,23 @@ double uniform(double low, double high) {
     return dist(gen);
 }
 
-void print2DVector(const std::vector<std::vector<float>>& vec) {
+void print2DVector(const vector<vector<float>>& vec) {
     for (const auto& row : vec) {
         for (const auto& element : row) {
-            std::cout << element << "\t";
+            cout << element << "\t";
         }
-        std::cout << std::endl;
+        cout << endl;
     }
 }
 
 void printChromoInfo(vector<chromoInfo> popData){
     cout << endl;
     for (const auto& chromo : popData) {
-        std::cout << "Fitness: " << chromo.fitness << ", Genes: ";
+        cout << "Fitness: " << chromo.fitness << ", Genes: ";
         for (const auto& gene : chromo.gene) {
-            std::cout << gene << "\t";
+            cout << gene << "\t";
         }
-        std::cout << std::endl;
+        cout << endl;
     }
     cout << endl;
 }
@@ -93,9 +93,9 @@ void print_vector(vector<float> vec){
     cout << endl;
 }
 
-void print_positions(const std::vector<position3D>& positions) {
+void print_positions(const vector<position3D>& positions) {
     for (size_t i = 0; i < positions.size(); ++i) {
-        std::cout << "Joint " << i << ": ("
+        cout << "Joint " << i << ": ("
                   << positions[i].x << ", "
                   << positions[i].y << ", "
                   << positions[i].z << ")\n";
@@ -199,8 +199,8 @@ float fitness(vector<float> chrm, RobotInfo robot, bool final_data = false) {
 }
 
 
-void plot_robot(const std::vector<float>& final_angles, const RobotInfo& robot) {
-    std::ostringstream json;
+void plot_robot(const vector<float>& final_angles, const RobotInfo& robot) {
+    ostringstream json;
 
     json << R"({"Initial":{)";
     for (int i = 0; i < robot.dof; ++i) {
@@ -226,7 +226,7 @@ void plot_robot(const std::vector<float>& final_angles, const RobotInfo& robot) 
     json << "]}";
 
     // Construct and execute the command
-    std::string command = "python3 ../visualization/robot_sim.py '" + json.str() + "'";
+    string command = "python3 ../visualization/robot_sim.py '" + json.str() + "'";
     system(command.c_str());
 }
 
@@ -262,21 +262,21 @@ bool loadDHFromYAML(const string& filename, RobotInfo& robot) {
 
 class CSVWriter {
 public:
-    CSVWriter(const std::string& file_name) : file(file_name, std::ios_base::app) {
+    RobotInfo robot;
+    CSVWriter(const RobotInfo& robot) : robot(robot), file(robot.name+".csv", ios_base::app) {
         if (!file.is_open()) {
-            std::cerr << "Error opening file: " << file_name << std::endl;
+            cerr << "Error opening file: " << robot.name+".csv" << endl;
             return;
         }
-
         // Check if the file is empty, write headers if needed
         if (file.tellp() == 0) {
             writeHeaders();
         }
     }
 
-    void appendData(const std::vector<float>& inputLayer,
-                    const std::vector<float>& outputLayer,
-                    const std::string& misc) {
+    void appendData(const vector<float>& inputLayer,
+                    const vector<float>& outputLayer,
+                    const string& misc) {
         // Write input data
         writeLayerData(inputLayer);
 
@@ -284,7 +284,7 @@ public:
         writeLayerData(outputLayer);
 
         // Write misc
-        file << misc << std::endl;
+        file << misc << endl;
 
         // Periodically flush to disk after 100 writes
         ++writeCount;
@@ -301,23 +301,27 @@ public:
     }
 
 private:
-    std::ofstream file;
+    ofstream file;
     size_t writeCount = 0;
 
     void writeHeaders() {
         // Write headers for input, output and misc
-        for (size_t i = 0; i < 9; ++i) {
-            file << "i_" << i + 1 << ",";
+        for (size_t i = 0; i < robot.dof; ++i) {
+            file << "initial_ang_" << i + 1 << ",";
         }
 
-        for (size_t i = 0; i < 6; ++i) {
-            file << "o_" << i + 1 << ",";
+        file << "target_pos_x" << ",";
+        file << "target_pos_y" << ",";
+        file << "target_pos_z" << ",";
+
+        for (size_t i = 0; i < robot.dof; ++i) {
+            file << "final_ang_" << i + 1 << ",";
         }
 
-        file << "misc" << std::endl;
+        file << "algorithm" << endl;
     }
 
-    void writeLayerData(const std::vector<float>& layer) {
+    void writeLayerData(const vector<float>& layer) {
         // Write the data in a single layer (input or output)
         for (size_t i = 0; i < layer.size(); ++i) {
             file << layer[i];

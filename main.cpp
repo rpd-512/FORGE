@@ -136,12 +136,13 @@ int main(int argc, char* argv[]){
     }
     else {cerr << "Failed to load DH parameters.\n";}
 
-    CSVWriter writer(robot.name+".csv");
+    robot.dof = robot.dh_params.size();
+
+    CSVWriter writer(robot);
     dataset_size = count_lines(robot.name+".csv")-1;
     int pop = 100;
     int itr = 100;
 
-    robot.dof = robot.dh_params.size();
 
     vector<thread> threads;
     unsigned int cores = thread::hardware_concurrency();
