@@ -1,9 +1,9 @@
 #include "src/src.h"
-#include "socialGroupOptimization/main.cpp"
-#include "geneticAlgorithm/main.cpp"
-#include "particleSwarmOptimization/main.cpp"
-#include "teachingLearningBasedOptimization/main.cpp"
-#include "differentialEvolution/main.cpp"
+#include "metaheuristics/socialGroupOptimization/main.cpp"
+#include "metaheuristics/geneticAlgorithm/main.cpp"
+#include "metaheuristics/particleSwarmOptimization/main.cpp"
+#include "metaheuristics/teachingLearningBasedOptimization/main.cpp"
+#include "metaheuristics/differentialEvolution/main.cpp"
 #include "gradientDescent/main.cpp"
 
 void clear_screen() {

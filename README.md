@@ -114,8 +114,9 @@ dh_parameters:
 ```
 FORGE/
 ├── main.cpp                  # Entry point
-├── <metaheuristic algo>/     # Implementations of various metaheuristic algorithms
-│   └── main.cpp
+├── metaheuristics/     
+│   └── <metaheuristic algo>/ # Implementations of various metaheuristic algorithms
+│       └── main.cpp
 ├── Makefile                  # Makefile build
 ├── CMakeLists.txt            # CMake build script
 ├── example_dh_parameters/    # Example YAML configurations
