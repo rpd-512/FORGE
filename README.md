@@ -130,9 +130,9 @@ FORGE/
 
 After running an algorithm, FORGE generates a `.csv` file logging each inverse kinematics attempt with the following structure:
 
-| i1 | i2 | i3 | i4 | i5 | i6 | i7 | i8 | i9 | o1 | o2 | o3 | o4 | o5 | o6 |
-|------|------|------|------|------|------|--------|--------|--------|--------|--------|--------|--------|--------|--------|
-| 0.12 | 0.35 | 0.78 | -0.2 | 1.05 | 0.66 | 500.0  | 200.0  | 300.0  | 0.11   | 0.33   | 0.80   | -0.21  | 1.04   | 0.65   |
+| initial_ang_1 | initial_ang_2 | initial_ang_1 | initial_ang_4 | initial_ang_5 | initial_ang_6 | target_pos_x | target_pos_y | target_pos_z | final_ang_1 | final_ang_2 | final_ang_3 | final_ang_4 | final_ang_5 | final_ang_6 | algorithm |
+|------|------|------|------|------|------|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|
+| 0.12 | 0.35 | 0.78 | -0.2 | 1.05 | 0.66 | 500.0  | 200.0  | 300.0  | 0.11   | 0.33   | 0.80   | -0.21  | 1.04   | 0.65   |PSO_Adam|
 
 ### Column Details:
 
