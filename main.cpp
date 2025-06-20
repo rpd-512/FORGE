@@ -64,7 +64,7 @@ void gen_set(int pop, int itr, RobotInfo robot, CSVWriter& writer){
     plotPoint pso = particleSwarmOptimization(pop,itr,randGen,robot);
     if(optima.fitness > pso.fitness) optima = pso;
     plotPoint sgo = socialGroupOptimization(pop,itr,randGen,robot);
-    if(optima.fitness > sgo.fitness || uniform(0,1) < 0.25) optima = sgo;
+    if(optima.fitness > sgo.fitness) optima = sgo;
     plotPoint tlbo = teachingLearningBasedOptimization(pop,itr,randGen,robot);
     if(optima.fitness > tlbo.fitness) optima = tlbo;
     plotPoint de = differentialEvolutionAlgorithm(pop,itr,randGen,robot);
