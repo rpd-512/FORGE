@@ -134,11 +134,13 @@ Matrix4d dh_transform(const dh_param& dhp, double theta) {
     return T;
 }
 
-double normalize_angle(double angle_rad) {
-    angle_rad = fmod(angle_rad, 2.0 * M_PI);
-    if (angle_rad < 0)
-        angle_rad += 2.0 * M_PI;
-    return angle_rad;
+vector<float> normalize_angle(vector<float> angle_vector) {
+    for (float& angle_rad : angle_vector) {  // use reference to modify in-place
+        angle_rad = fmod(angle_rad, 2.0 * M_PI);
+        if (angle_rad < 0)
+            angle_rad += 2.0 * M_PI;
+    }
+    return angle_vector;
 }
 
 vector<position3D> forward_kinematics(const vector<float>& theta, const RobotInfo& robot) {

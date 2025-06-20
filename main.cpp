@@ -61,14 +61,14 @@ void gen_set(int pop, int itr, RobotInfo robot, CSVWriter& writer){
 
     plotPoint pso = particleSwarmOptimization(pop,itr,randGen,robot);
     if(optima.fitness > pso.fitness) optima = pso;
-    //plotPoint ga = geneticAlgorithm(pop,itr,randGen,robot);
-    //if(optima.fitness > ga.fitness) optima = ga;
-    //plotPoint sgo = socialGroupOptimization(pop,itr,randGen,robot);
-    //if(optima.fitness > sgo.fitness) optima = sgo;
-    //plotPoint tlbo = teachingLearningBasedOptimization(pop,itr,randGen,robot);
-    //if(optima.fitness > tlbo.fitness) optima = tlbo;
-    //plotPoint de = differentialEvolutionAlgorithm(pop,itr,randGen,robot);
-    //if(optima.fitness > de.fitness) optima = de;
+    plotPoint ga = geneticAlgorithm(pop,itr,randGen,robot);
+    if(optima.fitness > ga.fitness) optima = ga;
+    plotPoint sgo = socialGroupOptimization(pop,itr,randGen,robot);
+    if(optima.fitness > sgo.fitness) optima = sgo;
+    plotPoint tlbo = teachingLearningBasedOptimization(pop,itr,randGen,robot);
+    if(optima.fitness > tlbo.fitness) optima = tlbo;
+    plotPoint de = differentialEvolutionAlgorithm(pop,itr,randGen,robot);
+    if(optima.fitness > de.fitness) optima = de;
 
 
     position3D dist = forward_kinematics(optima.best_gene, robot).back();
@@ -81,9 +81,9 @@ void gen_set(int pop, int itr, RobotInfo robot, CSVWriter& writer){
         optima = post_gd;
     }
     if(optima.fitness > 1){return;}
-    for(int i=0;i<robot.dof;i++){
-        optima.best_gene[i] = normalize_angle(optima.best_gene[i]);
-    }
+
+    optima.best_gene = normalize_angle(optima.best_gene);
+
     vector<float> inputLayer = robot.joint_angle;
     vector<float> posVector = {robot.destination.x,robot.destination.y,robot.destination.z};
     inputLayer.insert(inputLayer.end(),posVector.begin(),posVector.end());
