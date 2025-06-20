@@ -71,6 +71,7 @@ plotPoint teachingLearningBasedOptimization(int popl, int itrn, vector<vector <f
         }
         for(int std = 0; std < popl; std++){
             classData[std].fitness = fitness(classData[std].gene, robot);
+            classData[std].gene = normalize_angle(classData[std].gene);
         }
 
         classData.insert(classData.end(),init_classData.begin(),init_classData.end());

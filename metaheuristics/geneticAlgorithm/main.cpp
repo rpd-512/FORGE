@@ -51,6 +51,7 @@ plotPoint geneticAlgorithm(int popl, int itrn, vector<vector <float>> popArr, Ro
                 }
             }
             popData[p].fitness = fitness(chromoMain, robot);
+            popData[p].gene = normalize_angle(popData[p].gene);
         }
         popData.insert(popData.end(),eliteData.begin(),eliteData.end());
     }

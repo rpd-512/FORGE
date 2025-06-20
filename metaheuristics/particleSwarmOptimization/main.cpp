@@ -62,6 +62,7 @@ plotPoint particleSwarmOptimization(int popl, int itrn, vector<vector <float>> p
             p.position = p_pos;
             p.velocity = p_vel;
             p.fitness = fitness(p_pos,robot);
+            p.position = normalize_angle(p.position);
 
             //if found a fitness better than personal best than assign new personal best
             if(p.fitness < p.p_best_fitness){

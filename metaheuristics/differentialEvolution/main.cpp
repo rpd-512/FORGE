@@ -51,6 +51,9 @@ plotPoint differentialEvolutionAlgorithm(int popl, int itrn, vector<vector <floa
                 popData[p].fitness = newFit;
             }
         }
+        for(int p=0; p<popl;p++){
+            popData[p].gene = normalize_angle(popData[p].gene);
+        }
     }
     sort(popData.begin(), popData.end(), [](const chromoInfo& a, const chromoInfo& b) {
         return a.fitness < b.fitness;

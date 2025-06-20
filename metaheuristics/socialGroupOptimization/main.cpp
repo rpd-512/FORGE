@@ -64,7 +64,7 @@ plotPoint socialGroupOptimization(int popl, int itrn, vector<vector <float>> pop
             float new_fitness = fitness(x_new, robot);
             if(new_fitness < popData[p].fitness){
                 popData[p].fitness = new_fitness;
-                popData[p].gene = x_new;
+                popData[p].gene = normalize_angle(x_new);
                 if(new_fitness < g_best.fitness){
                     g_best.gene = x_new;
                     g_best.fitness = new_fitness;
