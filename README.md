@@ -123,6 +123,7 @@ FORGE/
 │   │── fanucm20ia.yaml
 │   │── tm5_700.yaml
 │   └── kawasaki_bx200l.yaml
+├── visualiser.py             # a basic visualiser to display a single row from generated csv
 └── README.md                 # You're reading it!
 ```
 
@@ -136,14 +137,37 @@ After running an algorithm, FORGE generates a `.csv` file logging each inverse k
 
 ### Column Details:
 
-- **i1–i6**: Initial joint angles provided as input to the solver.
-- **i7, i8, i9**: Desired 3D end-effector position (target).
-- **o1-o6**: Output joint angles predicted by the solver to achieve the target.
+- **initial_ang_1–initial_ang_6**: Initial joint angles provided as input to the solver.
+- **target_pos_x, target_pos_y, target_pos_z**: Desired 3D end-effector position (target).
+- **final_ang_1-final_ang_6**: Output joint angles predicted by the solver to achieve the target.
 
 These CSV files are useful for:
 - Evaluating solver accuracy (e.g., how close output angles reach the target)
 - Debugging IK performance
 - Training or benchmarking machine learning models
+
+---
+
+## 📈 Visualizing a Single IK Output
+
+To visualise a single row from the output CSV file, use the provided `visualiser.py` script.
+
+### 🖥️ Usage
+
+```bash
+python visualise_fk_csv.py <config.yaml> <data_line>
+```
+
+### 📌 Example
+
+```bash
+python visualise_fk_csv.py example_dh_parameters/config.yaml "4.78,5.97,0.45,0.50,5.16,2.71,-657.6,1688.0,730.3,1.88,6.17,1.44,1.40,4.82,2.71,PSO_Adam"
+```
+
+- `<config.yaml>`: Path to the YAML file containing your robot's DH parameters  
+- `<data_line>`: A comma-separated line copied from your output CSV (enclosed in double quotes)
+
+This tool reconstructs and displays the forward kinematics output of the predicted joint angles, helping you verify accuracy visually.
 
 ---
 

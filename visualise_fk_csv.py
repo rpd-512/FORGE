@@ -65,8 +65,8 @@ def parse_csv_line(line):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python visualize_fk_csv.py <config.yaml> <data_line>")
-        print("Example: python visualize_fk_csv.py config.yaml \"4.78,5.97,0.45,0.50,5.16,2.71,-657.6,1688.0,730.3,1.88,6.17,1.44,1.40,4.82,2.71,PSO\"")
+        print("Usage: python visualise_fk_csv.py <config.yaml> <data_line>")
+        print("Example: python visualise_fk_csv.py config.yaml \"4.78,5.97,0.45,0.50,5.16,2.71,-657.6,1688.0,730.3,1.88,6.17,1.44,1.40,4.82,2.71,PSO_Adam\"")
         sys.exit(1)
 
     yaml_file = sys.argv[1]
