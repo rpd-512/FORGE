@@ -35,7 +35,7 @@ void gen_set(int pop, int itr, RobotInfo robot, CSVWriter& writer){
     int dim = robot.dof;
     robot.joint_angle = {};
     for (int i = 0; i < dim; ++i) {
-        robot.joint_angle.push_back(uniform(-180, 180));
+        robot.joint_angle.push_back(uniform(0, 2*M_PI));
     }
 
     float net_radius = 0;
@@ -59,16 +59,16 @@ void gen_set(int pop, int itr, RobotInfo robot, CSVWriter& writer){
     plotPoint optima, post_gd;
     optima.fitness = numeric_limits<double>::max();
 
-    plotPoint ga = geneticAlgorithm(pop,itr,randGen,robot);
-    if(optima.fitness > ga.fitness) optima = ga;
     plotPoint pso = particleSwarmOptimization(pop,itr,randGen,robot);
     if(optima.fitness > pso.fitness) optima = pso;
-    plotPoint sgo = socialGroupOptimization(pop,itr,randGen,robot);
-    if(optima.fitness > sgo.fitness) optima = sgo;
-    plotPoint tlbo = teachingLearningBasedOptimization(pop,itr,randGen,robot);
-    if(optima.fitness > tlbo.fitness) optima = tlbo;
-    plotPoint de = differentialEvolutionAlgorithm(pop,itr,randGen,robot);
-    if(optima.fitness > de.fitness) optima = de;
+    //plotPoint ga = geneticAlgorithm(pop,itr,randGen,robot);
+    //if(optima.fitness > ga.fitness) optima = ga;
+    //plotPoint sgo = socialGroupOptimization(pop,itr,randGen,robot);
+    //if(optima.fitness > sgo.fitness) optima = sgo;
+    //plotPoint tlbo = teachingLearningBasedOptimization(pop,itr,randGen,robot);
+    //if(optima.fitness > tlbo.fitness) optima = tlbo;
+    //plotPoint de = differentialEvolutionAlgorithm(pop,itr,randGen,robot);
+    //if(optima.fitness > de.fitness) optima = de;
 
 
     position3D dist = forward_kinematics(optima.best_gene, robot).back();
@@ -125,7 +125,7 @@ int main(int argc, char* argv[]){
     cout << "Using file: " << filename << std::endl;    srand(time(0));
     RobotInfo robot;
 
-    robot.name = "kawasaki_bx200l";
+    robot.name = get_robot_name(filename);
     // a, d, alpha
     if (loadDHFromYAML(filename, robot)) {
         cout << "Loaded DH parameters:\n";

@@ -74,6 +74,12 @@ void print2DVector(const vector<vector<float>>& vec) {
     }
 }
 
+string get_robot_name(const string& filename) {
+    size_t slash = filename.find_last_of("/\\");
+    size_t dot = filename.find_last_of(".");
+    return filename.substr(slash + 1, dot - slash - 1);
+}
+
 void printChromoInfo(vector<chromoInfo> popData){
     cout << endl;
     for (const auto& chromo : popData) {
@@ -108,7 +114,7 @@ vector<vector <float>> generateChromosome(int pop, int size){
     for(int i=0;i<pop;i++){
         chrm = {};
         for(int j=0;j<size;j++){
-            chrm.push_back(randint(-360,360));
+            chrm.push_back(uniform(0,2*M_PI));
         }
         rpop.push_back(chrm);
     }
@@ -116,24 +122,23 @@ vector<vector <float>> generateChromosome(int pop, int size){
     return rpop;
 }
 
-Matrix4d dh_transform(const dh_param& dhp, double theta_deg) {
+Matrix4d dh_transform(const dh_param& dhp, double theta) {
     double alpha_rad = dhp.alpha * M_PI / 180.0;
-    double theta_rad = theta_deg * M_PI / 180.0;
 
     Matrix4d T;
-    T << cos(theta_rad), -sin(theta_rad)*cos(alpha_rad),  sin(theta_rad)*sin(alpha_rad), dhp.a * cos(theta_rad),
-         sin(theta_rad),  cos(theta_rad)*cos(alpha_rad), -cos(theta_rad)*sin(alpha_rad), dhp.a * sin(theta_rad),
+    T << cos(theta), -sin(theta)*cos(alpha_rad),  sin(theta)*sin(alpha_rad), dhp.a * cos(theta),
+         sin(theta),  cos(theta)*cos(alpha_rad), -cos(theta)*sin(alpha_rad), dhp.a * sin(theta),
          0,              sin(alpha_rad),                 cos(alpha_rad),                dhp.d,
          0,              0,                             0,                            1;
 
     return T;
 }
 
-double normalize_angle(double angle) {
-    angle = fmod(angle + 180.0, 360.0);
-    if (angle < 0)
-        angle += 360.0;
-    return angle - 180.0;
+double normalize_angle(double angle_rad) {
+    angle_rad = fmod(angle_rad, 2.0 * M_PI);
+    if (angle_rad < 0)
+        angle_rad += 2.0 * M_PI;
+    return angle_rad;
 }
 
 vector<position3D> forward_kinematics(const vector<float>& theta, const RobotInfo& robot) {
@@ -185,7 +190,7 @@ float fitness(vector<float> chrm, RobotInfo robot, bool final_data = false) {
     norm_pos_dist = (init_pos_dist == 0.0f) ? 0.0f : pos_dist / init_pos_dist;
 
     ang_dist = distance(chrm, robot.joint_angle);
-    float max_ang_dist = sqrt(chrm.size() * 180.0f * 180.0f); // Max L2 norm over n joints
+    float max_ang_dist = sqrt(chrm.size() * M_PI * M_PI); // Max L2 norm over n joints
     norm_ang_dist = (max_ang_dist == 0.0f) ? 0.0f : ang_dist / max_ang_dist;
     
     norm_ang_dist *= exp(-10 * (0.3 - norm_pos_dist)); // drops as pos error increases
