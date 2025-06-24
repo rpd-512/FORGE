@@ -122,7 +122,9 @@ FORGE/
 ├── example_dh_parameters/    # Example YAML configurations
 │   │── fanucm20ia.yaml
 │   │── tm5_700.yaml
-│   └── kawasaki_bx200l.yaml
+│   │── kawasaki_bx200l.yaml
+│   │── kawasaki_bx200l_restricted_3dof.yaml
+│   └── kuka_youbot.yaml
 ├── visualiser.py             # a basic visualiser to display a single row from generated csv
 └── README.md                 # You're reading it!
 ```

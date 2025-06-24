@@ -1,0 +1,16 @@
+dh_parameters:
+  - a: 33
+    d: 147
+    alpha: 90
+  - a: 155
+    d: 0
+    alpha: 0
+  - a: 135
+    d: 0
+    alpha: 0
+  - a: 0
+    d: 0
+    alpha: 90
+  - a: 0
+    d: 217.5
+    alpha: 0
