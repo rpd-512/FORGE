@@ -122,17 +122,20 @@ vector<vector <float>> generateChromosome(int pop, int size){
     return rpop;
 }
 
-Matrix4d dh_transform(const dh_param& dhp, double theta) {
-    double alpha_rad = dhp.alpha * M_PI / 180.0;
+// Instead of returning Matrix4d
+void dh_transform(const dh_param& param, float theta, Matrix4d& A) {
+    double alpha = param.alpha * M_PI / 180.0;
+    double a     = param.a;
+    double d     = param.d;
+    double ct    = cos(theta), st = sin(theta);
+    double ca    = cos(alpha), sa = sin(alpha);
 
-    Matrix4d T;
-    T << cos(theta), -sin(theta)*cos(alpha_rad),  sin(theta)*sin(alpha_rad), dhp.a * cos(theta),
-         sin(theta),  cos(theta)*cos(alpha_rad), -cos(theta)*sin(alpha_rad), dhp.a * sin(theta),
-         0,              sin(alpha_rad),                 cos(alpha_rad),                dhp.d,
-         0,              0,                             0,                            1;
-
-    return T;
+    A << ct, -st * ca,  st * sa, a * ct,
+         st,  ct * ca, -ct * sa, a * st,
+         0,       sa,      ca,     d,
+         0,        0,       0,     1;
 }
+
 
 vector<float> normalize_angle(vector<float> angle_vector) {
     for (float& angle_rad : angle_vector) {  // use reference to modify in-place
@@ -145,18 +148,19 @@ vector<float> normalize_angle(vector<float> angle_vector) {
 
 vector<position3D> forward_kinematics(const vector<float>& theta, const RobotInfo& robot) {
     Matrix4d T = Matrix4d::Identity();
-    vector<position3D> joint_positions;
-
-    // Initial origin point
+    Matrix4d A;
     Vector4d origin(0, 0, 0, 1);
-    Vector4d pos = T * origin;
+    Vector4d pos;
+    vector<position3D> joint_positions;
+    joint_positions.reserve(robot.dof + 1);
 
+    pos.noalias() = T * origin;
     joint_positions.push_back({static_cast<float>(pos(0)), static_cast<float>(pos(1)), static_cast<float>(pos(2))});
 
-    for (int i = 0; i < robot.dof; i++) {
-        Matrix4d A = dh_transform(robot.dh_params[i], theta[i]);
-        T = T * A;
-        pos = T * origin;
+    for (int i = 0; i < robot.dof; ++i) {
+        dh_transform(robot.dh_params[i], theta[i], A);
+        T.noalias() = T * A;
+        pos.noalias() = T * origin;
 
         joint_positions.push_back({static_cast<float>(pos(0)), static_cast<float>(pos(1)), static_cast<float>(pos(2))});
     }
