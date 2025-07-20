@@ -1,0 +1,18 @@
+[
+    {
+      "type": "cube",
+      "position": [100, 200, 0],
+      "size": [50, 50, 50]
+    },
+    {
+      "type": "cylinder",
+      "position": [250, 100, 0],
+      "radius": 20,
+      "height": 100
+    },
+    {
+      "type": "sphere",
+      "position": [400, 300, 0],
+      "radius": 30
+    }
+]
