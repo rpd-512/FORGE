@@ -146,8 +146,7 @@ int main(int argc, char* argv[]){
 
     vector<thread> threads;
     unsigned int cores = thread::hardware_concurrency();
-
-    // Launch 5 threads
+    // Launch threads
     for (int i = 0; i < stoi(argv[2]); ++i) {
         threads.emplace_back(thread_worker, ref(pop), itr, ref(robot), ref(writer));
     }
