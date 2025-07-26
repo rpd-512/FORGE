@@ -52,12 +52,12 @@ def line_intersects_sphere(p1, p2, center, radius):
     return (0.0 <= t1 <= 1.0) or (0.0 <= t2 <= 1.0)
 
 
-def line_intersects_cylinder(p1, p2, base, axis, height, radius):
+def line_intersects_cylinder(p1, p2, base, height, radius):
 
     p1 = np.array(p1, dtype=float)
     p2 = np.array(p2, dtype=float)
     base = np.array(base, dtype=float)
-    axis = np.array(axis, dtype=float)
+    axis = np.array(np.array([1, 0, 0]), dtype=float)
 
     axis = axis / np.linalg.norm(axis)  # Normalize axis
     d = p2 - p1                         # Segment direction
@@ -138,7 +138,8 @@ if(__name__ == "__main__"):
         z = center[2] + radius * np.cos(v)
         ax.plot_surface(x, y, z, color=color, alpha=alpha)
 
-    def draw_cylinder(ax, base, axis, radius, height, color='red', alpha=0.2):
+    def draw_cylinder(ax, base, radius, height, color='red', alpha=0.2):
+        axis = np.array([1, 0, 0])
         axis = axis / np.linalg.norm(axis)
         t = np.linspace(0, height, 10)
         theta = np.linspace(0, 2*np.pi, 30)

@@ -7,6 +7,7 @@ from matplotlib.widgets import Slider
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
+from collision_utils import line_intersects_sphere, line_intersects_cylinder, line_intersects_aabb
 
 if len(sys.argv) < 3:
     print("Usage: python3 live_scene_with_robot.py <scene_file.json> <dh_file.yaml>")
@@ -98,6 +99,28 @@ def render_scene(ax, shapes):
         elif t == "cylinder":
             draw_cylinder(ax, pos, obj["radius"], obj["height"], color=color)
 
+def check_collision(p1, p2, shapes):
+    for obj in shapes:
+        t = obj["type"]
+        pos = obj["position"]
+        if t == "cube":
+            size = obj["size"]
+            half_size = np.array(size) / 2.0
+            min_corner = np.array(pos) - half_size
+            max_corner = np.array(pos) + half_size
+            if line_intersects_aabb(p1, p2, min_corner, max_corner):
+                return True
+        elif t == "sphere":
+            radius = obj["radius"]
+            if line_intersects_sphere(p1, p2, pos, radius):
+                return True
+        elif t == "cylinder":
+            radius = obj["radius"]
+            height = obj["height"]
+            if line_intersects_cylinder(p1, p2, pos, height, radius):
+                return True
+    return False
+
 def update_plot(val=None):
     ax.clear()
     try:
@@ -112,13 +135,17 @@ def update_plot(val=None):
 
     render_scene(ax, shapes)
     points = forward_kinematics(dh_params)
+    in_collision = False
+    for p in range(len(points)-1):
+        in_collision |= check_collision(points[p], points[p+1],shapes)
     ax.plot(points[:,0], points[:,1], points[:,2], '-o', lw=2, color='black')
 
     ax.set_xlim(-SCENE_LIMIT, SCENE_LIMIT)
     ax.set_ylim(-SCENE_LIMIT, SCENE_LIMIT)
     ax.set_zlim(0, SCENE_LIMIT*2)
     ax.set_box_aspect([1, 1, 1])
-    ax.set_title("Robot in Live Scene", fontsize=14)
+    ax.set_title("Scene Designer and Robot Visualiser\nIs Colliding: "+str(in_collision), fontsize=14)
+
     fig.canvas.draw_idle()
 
 fig = plt.figure()
