@@ -14,8 +14,8 @@ void clear_screen() {
     #endif
 }
 
-int count_lines(const string& filename) {
-    ifstream file(filename);
+int count_lines(const string& file_yaml) {
+    ifstream file(file_yaml);
     if (!file.is_open()) {
         return 0; // File doesn't exist or cannot be opened
     }
@@ -35,7 +35,8 @@ void gen_set(int pop, int itr, RobotInfo robot, CSVWriter& writer){
     int dim = robot.dof;
     robot.joint_angle = {};
     for (int i = 0; i < dim; ++i) {
-        robot.joint_angle.push_back(uniform(0, 2*M_PI));
+        robot.joint_angle.push_back(0);
+        //robot.joint_angle.push_back(uniform(0, 2*M_PI));
     }
 
     float net_radius = 0;
@@ -73,14 +74,13 @@ void gen_set(int pop, int itr, RobotInfo robot, CSVWriter& writer){
 
     position3D dist = forward_kinematics(optima.best_gene, robot).back();
     optima.fitness = distance(dist, robot.destination);
-    //Gradient Descent Post Processing
     float alpha = 0.001;  // learning rate
     post_gd = gradientDescent(20000, alpha, optima.best_gene, robot);
     if(post_gd.fitness < optima.fitness){
         post_gd.name = optima.name+"_"+post_gd.name;
         optima = post_gd;
     }
-    if(optima.fitness > 1){return;}
+    if(optima.fitness > 1 || SceneCollisionCheck(robot.scene_objects, forward_kinematics(optima.best_gene,robot))){return;}
 
     optima.best_gene = normalize_angle(optima.best_gene);
 
@@ -117,17 +117,23 @@ int main(int argc, char* argv[]){
     if (argc < 3) {
         cerr << "Usage: " << argv[0] << " <config.yaml> <num_cores>\n"
           << "  <config.yaml> : Path to the YAML file containing DH parameters\n"
+          << "  <scene.json>  : Path to the JSON file containing Scene Data (Use scene_designer/Designer.py to create scene)\n"
           << "  <num_cores>   : Number of CPU cores to assign to the task\n";
         return 1;
     }
 
-    string filename = argv[1];
-    cout << "Using file: " << filename << std::endl;    srand(time(0));
+    string file_yaml = argv[1];
+    cout << "Using YAML file: " << file_yaml << std::endl;
+    string file_json = argv[2];
+    cout << "Using JSON file: " << file_json << std::endl;
     RobotInfo robot;
 
-    robot.name = get_robot_name(filename);
+    srand(time(0));
+    
+
+    robot.name = get_robot_name(file_yaml);
     // a, d, alpha
-    if (loadDHFromYAML(filename, robot)) {
+    if (loadDHFromYAML(file_yaml, robot)) {
         cout << "Loaded DH parameters:\n";
         for (size_t i = 0; i < robot.dh_params.size(); ++i) {
             auto& dh = robot.dh_params[i];
@@ -135,6 +141,14 @@ int main(int argc, char* argv[]){
         }
     }
     else {cerr << "Failed to load DH parameters.\n";}
+
+    loadSceneFromJSON(file_json, robot);
+    if (robot.scene_objects.empty()) {
+        cerr << "No scene objects loaded from JSON file." << endl;
+        return 1;
+    } else {
+        cout << "Loaded " << robot.scene_objects.size() << " scene objects from JSON file." << endl;
+    }   
 
     robot.dof = robot.dh_params.size();
 
@@ -147,7 +161,7 @@ int main(int argc, char* argv[]){
     vector<thread> threads;
     unsigned int cores = thread::hardware_concurrency();
     // Launch threads
-    for (int i = 0; i < stoi(argv[2]); ++i) {
+    for (int i = 0; i < stoi(argv[3]); ++i) {
         threads.emplace_back(thread_worker, ref(pop), itr, ref(robot), ref(writer));
     }
 

@@ -7,7 +7,9 @@ pair<vector<float>,float> partial_derivative(vector<float> angle, RobotInfo robo
     // Evaluate f(angle)
     vector<position3D> robo_pos = forward_kinematics(angle, robot);
     float f_a = distance(robo_pos.back(), robot.destination);
-    
+    if (SceneCollisionCheck(robot.scene_objects,robo_pos)) {
+        f_a += 1e6;  // Large penalty
+    }
     vector<float> drvt(angle.size());
 
     for (int i = 0; i < angle.size(); ++i) {
@@ -16,7 +18,9 @@ pair<vector<float>,float> partial_derivative(vector<float> angle, RobotInfo robo
 
         vector<position3D> robo_pos_perturbed = forward_kinematics(perturbed, robot);
         float f_perturbed = distance(robo_pos_perturbed.back(), robot.destination);
-
+        if(SceneCollisionCheck(robot.scene_objects,robo_pos_perturbed)) {
+            f_perturbed += 1e6;  // Same large penalty
+        }
         drvt[i] = (f_perturbed - f_a) / h;
     }
 
@@ -54,7 +58,14 @@ plotPoint gradientDescent(int epoch, float alpha, vector<float> current_angle, R
             // Update parameter
             current_angle[i] -= alpha * m_hat[i] / (sqrt(v_hat[i]) + epsilon);
         }
-
+        vector<position3D> updated_pos = forward_kinematics(current_angle, robot);
+        if (SceneCollisionCheck(robot.scene_objects,updated_pos)) {
+            // Revert update if collision detected
+            for (int i = 0; i < n; ++i) {
+                current_angle[i] += alpha * m_hat[i] / (sqrt(v_hat[i]) + epsilon); // Undo update
+            }
+            alpha *= 0.5; // Optional: reduce step size to escape collision
+        }
         // Optional stopping criteria
         float grad_norm = 0;
         for (float g : grad) grad_norm += g * g;
