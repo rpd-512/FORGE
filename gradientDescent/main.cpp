@@ -64,7 +64,6 @@ plotPoint gradientDescent(int epoch, float alpha, vector<float> current_angle, R
             for (int i = 0; i < n; ++i) {
                 current_angle[i] += alpha * m_hat[i] / (sqrt(v_hat[i]) + epsilon); // Undo update
             }
-            alpha *= 0.5; // Optional: reduce step size to escape collision
         }
         // Optional stopping criteria
         float grad_norm = 0;
