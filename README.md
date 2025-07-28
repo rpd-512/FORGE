@@ -31,6 +31,10 @@ sudo dnf install eigen3-devel yaml-cpp-devel
 sudo apt install libeigen3-dev libyaml-cpp-dev
 ```
 
+For recompiling C++ binding in `scene_designer/`, pybind11 is required, which can be installed using:
+```bash
+pip3 install pybind11
+```
 ---
 
 ### 🔧 Build Using Make
@@ -136,6 +140,17 @@ dh_parameters:
 - `config.yaml`: YAML file containing DH parameters
 - `scene.json`: JSON file containing environment scene
 - `4`: Number of threads to use (multi-core optimization)
+
+---
+
+## 🧰 Scene Designer
+
+The `scene_designer/` module provides a lightweight, interactive 3D design and simulation tool for building and testing robotic scenes. It supports real-time collision checking using fast C++ geometry routines wrapped with `pybind11`. Users can load robot models via DH parameter `YAML` files and interactively adjust joint angles using sliders. Additionally, the tool allows you to define obstacles (cubes, spheres, cylinders) in a scene `JSON` file—which is monitored and automatically reloaded live whenever changes are made. This enables rapid prototyping and seamless scene tweaking without restarting the application.
+
+### 🧪 Usage
+```bash
+python3 Designer.py scene_file.json dh_file.yaml
+```
 
 ---
 

@@ -11,7 +11,7 @@ import numpy as np
 from collision_cpp import position3D, line_intersects_sphere, line_intersects_cylinder, line_intersects_aabb
 
 if len(sys.argv) < 3:
-    print("Usage: python3 live_scene_with_robot.py <scene_file.json> <dh_file.yaml>")
+    print("Usage: python3 Designer.py <scene_file.json> <dh_file.yaml>")
     sys.exit(1)
 
 FILE_PATH = sys.argv[1]
