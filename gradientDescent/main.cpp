@@ -1,5 +1,5 @@
-#include "../src/src.h"
-
+#include "../src/types.h"
+#include "../src/robomath_utils.h"
 
 pair<vector<float>,float> partial_derivative(vector<float> angle, RobotInfo robot) {
     float h = 0.0001;

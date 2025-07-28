@@ -1,4 +1,6 @@
-#include "../../src/src.h"
+#include "../../src/types.h"
+#include "../../src/random_utils.h"
+#include "../../src/robomath_utils.h"
 
 plotPoint particleSwarmOptimization(int popl, int itrn, vector<vector <float>> popArr, RobotInfo robot){
     typedef struct particle{
