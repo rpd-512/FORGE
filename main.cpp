@@ -36,9 +36,13 @@ int count_lines(const string& file_yaml) {
 }
 
 atomic<int> dataset_size(0);
+int dataset_max_size;
 mutex mtx;  // Mutex for protecting shared resource access
 
 void gen_set(int pop, int itr, RobotInfo robot, CSVWriter& writer){
+    if (dataset_size >= dataset_max_size) {
+        return; // Stop if the dataset size limit is reached
+    }
     int dim = robot.dof;
     robot.joint_angle = {};
     for (int i = 0; i < dim; ++i) {
@@ -114,7 +118,7 @@ void gen_set(int pop, int itr, RobotInfo robot, CSVWriter& writer){
 }
 
 void thread_worker(int pop, int itr, RobotInfo robot, CSVWriter& writer){
-    while(1){
+    while(dataset_size < dataset_max_size){
         gen_set(pop, itr, robot, writer);
     }
 }
@@ -122,12 +126,15 @@ void thread_worker(int pop, int itr, RobotInfo robot, CSVWriter& writer){
 
 int main(int argc, char* argv[]){
     if (argc < 3) {
-        cerr << "Usage: " << argv[0] << " <config.yaml> <num_cores>\n"
+        cerr << "Usage: " << argv[0] << " <config.yaml> <scene.json> <num_cores> <gen_count>\n"
           << "  <config.yaml> : Path to the YAML file containing DH parameters\n"
           << "  <scene.json>  : Path to the JSON file containing Scene Data (Use scene_designer/Designer.py to create scene)\n"
-          << "  <num_cores>   : Number of CPU cores to assign to the task\n";
+          << "  <num_cores>   : Number of CPU cores to assign to the task\n"
+          << "  <gen_count>   : Max number of datapoints required\n";
         return 1;
     }
+
+    dataset_max_size = stoi(argv[4]);
 
     string file_yaml = argv[1];
     cout << "Using YAML file: " << file_yaml << std::endl;

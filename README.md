@@ -134,12 +134,13 @@ dh_parameters:
 ## 🧪 Usage
 
 ```bash
-./FORGE_linux config.yaml scene.json 4
+./FORGE_linux config.yaml scene.json 4 2000
 ```
 
 - `config.yaml`: YAML file containing DH parameters
 - `scene.json`: JSON file containing environment scene
 - `4`: Number of threads to use (multi-core optimization)
+- `2000`: Number of datapoints user needs to generate
 
 ---
 
