@@ -7,7 +7,8 @@ from matplotlib.widgets import Slider
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
-from collision_utils import line_intersects_sphere, line_intersects_cylinder, line_intersects_aabb
+
+from collision_cpp import position3D, line_intersects_sphere, line_intersects_cylinder, line_intersects_aabb
 
 if len(sys.argv) < 3:
     print("Usage: python3 live_scene_with_robot.py <scene_file.json> <dh_file.yaml>")
@@ -17,6 +18,9 @@ FILE_PATH = sys.argv[1]
 DH_FILE_PATH = sys.argv[2]
 POLL_INTERVAL = 1000  # ms
 SCENE_LIMIT = 1000  # constant bounds
+
+def vec_to_pos3D(vec):
+    return position3D(vec[0], vec[1], vec[2])
 
 def load_dh_params(file_path):
     with open(file_path, 'r') as f:
@@ -108,16 +112,16 @@ def check_collision(p1, p2, shapes):
             half_size = np.array(size) / 2.0
             min_corner = np.array(pos) - half_size
             max_corner = np.array(pos) + half_size
-            if line_intersects_aabb(p1, p2, min_corner, max_corner):
+            if line_intersects_aabb(vec_to_pos3D(p1), vec_to_pos3D(p2), vec_to_pos3D(min_corner), vec_to_pos3D(max_corner)):
                 return True
         elif t == "sphere":
             radius = obj["radius"]
-            if line_intersects_sphere(p1, p2, pos, radius):
+            if line_intersects_sphere(vec_to_pos3D(p1), vec_to_pos3D(p2), vec_to_pos3D(pos), radius):
                 return True
         elif t == "cylinder":
             radius = obj["radius"]
             height = obj["height"]
-            if line_intersects_cylinder(p1, p2, pos, height, radius):
+            if line_intersects_cylinder(vec_to_pos3D(p1), vec_to_pos3D(p2), vec_to_pos3D(pos), height, radius):
                 return True
     return False
 

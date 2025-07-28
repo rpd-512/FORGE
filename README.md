@@ -98,13 +98,43 @@ dh_parameters:
 
 ---
 
+## 📂 JSON Format Example
+
+```json
+[
+    {
+        "type": "cube",
+        "position": [-100, 200, 0],
+        "size": [200, 250, 250],
+        "color": "green"
+    },
+    {
+        "type": "cylinder",
+        "position": [250, 100, 0],
+        "radius": 100,
+        "height": 550,
+        "color": "pink"
+    },
+    {
+        "type": "sphere",
+        "position": [250, 100, 550],
+        "radius": 300,
+        "color": "pink"
+    }
+]
+```
+
+---
+
+
 ## 🧪 Usage
 
 ```bash
-./FORGE_linux config.yaml 4
+./FORGE_linux config.yaml scene.json 4
 ```
 
 - `config.yaml`: YAML file containing DH parameters
+- `scene.json`: JSON file containing environment scene
 - `4`: Number of threads to use (multi-core optimization)
 
 ---
@@ -113,20 +143,45 @@ dh_parameters:
 
 ```
 FORGE/
-├── main.cpp                  # Entry point
-├── metaheuristics/     
-│   └── <metaheuristic algo>/ # Implementations of various metaheuristic algorithms
-│       └── main.cpp
-├── Makefile                  # Makefile build
-├── CMakeLists.txt            # CMake build script
-├── example_dh_parameters/    # Example YAML configurations
-│   │── fanucm20ia.yaml
-│   │── tm5_700.yaml
-│   │── kawasaki_bx200l.yaml
-│   │── kawasaki_bx200l_restricted_3dof.yaml
-│   └── kuka_youbot.yaml
-├── visualiser.py             # a basic visualiser to display a single row from generated csv
+├── CMakeLists.txt                      # CMake build script
+├── LICENSE                             # Project license
+├── Makefile                            # Makefile for building
+├── main.cpp                            # Entry point for IK/robotics experiments
+├── visualise_fk_csv.py                # Visualizer to display FK output from CSV
+│
+├── example_dh_parameters/             # DH parameter YAML files for various robots
+│   ├── fanuc_m20ia.yaml
+│   ├── kawasaki_bx200l.yaml
+│   ├── kuka_youbot.yaml
+│   └── tm5_700.yaml
+│
+├── gradientDescent/
+│   └── main.cpp                        # Gradient Descent implementation
+│
+├── metaheuristics/                    # Metaheuristic algorithm implementations
+│   ├── differentialEvolution/
+│   ├── geneticAlgorithm/
+│   ├── particleSwarmOptimization/
+│   ├── socialGroupOptimization/
+│   └── teachingLearningBasedOptimization/
+│
+├── scene_designer/                    # Scene designer tool with collision bindings
+│   ├── Designer.py                    # Interactive 3D scene design with sliders
+│   ├── collision_bindings.cpp         # Pybind11 bindings for collision functions
+│   ├── collision_cpp.cpython-310-...  # Compiled Python module for collisions
+│   ├── example_scene.json             # Example 3D scene layout
+│   ├── Makefile
+│   └── __pycache__/
+│
+├── src/                                # Core utility functions and headers
+│   ├── collision_utils.h
+│   ├── debug_utils.h
+│   ├── io_utils.h
+│   ├── random_utils.h
+│   ├── robomath_utils.h
+│   └── types.h
 └── README.md                 # You're reading it!
+
 ```
 
 ## 📄 Output CSV Format
