@@ -32,6 +32,11 @@ void dh_transform(const dh_param& param, float theta, Matrix4d& A) {
          0,        0,       0,     1;
 }
 
+Matrix4d dh_transform_py(const dh_param& param, float theta) {
+    Matrix4d A;
+    dh_transform(param, theta, A);
+    return A;
+}
 
 vector<float> normalize_angle(vector<float> angle_vector) {
     for (float& angle_rad : angle_vector) {  // use reference to modify in-place
@@ -52,15 +57,12 @@ vector<position3D> forward_kinematics(const vector<float>& theta, const RobotInf
 
     pos.noalias() = T * origin;
     joint_positions.push_back({static_cast<float>(pos(0)), static_cast<float>(pos(1)), static_cast<float>(pos(2))});
-
     for (int i = 0; i < robot.dof; ++i) {
         dh_transform(robot.dh_params[i], theta[i], A);
-        T.noalias() = T * A;
+        T = T * A;
         pos.noalias() = T * origin;
-
         joint_positions.push_back({static_cast<float>(pos(0)), static_cast<float>(pos(1)), static_cast<float>(pos(2))});
     }
-
     return joint_positions;
 }
 
@@ -73,7 +75,7 @@ float distance(const position3D& p1, const position3D& p2) {
 
 float distance(const vector<float>& v1, const vector<float>& v2) {
     float dist = 0;
-    for(int i=0; i<v1.size(); i++){
+    for(size_t i=0; i<v1.size(); i++){
         dist += (v1[i] - v2[i])*(v1[i] - v2[i]);
     }
     return sqrt(dist);

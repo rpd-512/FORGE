@@ -8,7 +8,13 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
-from collision_cpp import position3D, line_intersects_sphere, line_intersects_cylinder, line_intersects_aabb
+from designer_modules_cpp import (
+    position3D, dh_param, RobotInfo,
+    forward_kinematics,
+    line_intersects_aabb,
+    line_intersects_sphere,
+    line_intersects_cylinder,
+)
 
 if len(sys.argv) < 3:
     print("Usage: python3 Designer.py <scene_file.json> <dh_file.yaml>")
@@ -25,25 +31,11 @@ def vec_to_pos3D(vec):
 def load_dh_params(file_path):
     with open(file_path, 'r') as f:
         data = yaml.safe_load(f)
-    return [[0, joint['d'], joint['a'], joint['alpha']] for joint in data['dh_parameters']]
-
-def dh_transform(theta_deg, d, a, alpha_deg):
-    theta = np.radians(theta_deg)
-    alpha = np.radians(alpha_deg)
-    return np.array([
-        [np.cos(theta), -np.sin(theta)*np.cos(alpha),  np.sin(theta)*np.sin(alpha), a*np.cos(theta)],
-        [np.sin(theta),  np.cos(theta)*np.cos(alpha), -np.cos(theta)*np.sin(alpha), a*np.sin(theta)],
-        [0,              np.sin(alpha),                np.cos(alpha),               d],
-        [0,              0,                            0,                           1]
-    ])
-
-def forward_kinematics(dh_params):
-    T = np.eye(4)
-    points = [T[:3, 3]]
-    for theta, d, a, alpha in dh_params:
-        T = T @ dh_transform(theta, d, a, alpha)
-        points.append(T[:3, 3])
-    return np.array(points)
+    dhpar = []
+    for joint in data['dh_parameters']:
+        d = dh_param(joint['a'], joint['d'], joint['alpha'])
+        dhpar.append(d)
+    return dhpar
 
 def draw_cube(ax, position, size, color='blue'):
     x, y, z = position
@@ -112,16 +104,16 @@ def check_collision(p1, p2, shapes):
             half_size = np.array(size) / 2.0
             min_corner = np.array(pos) - half_size
             max_corner = np.array(pos) + half_size
-            if line_intersects_aabb(vec_to_pos3D(p1), vec_to_pos3D(p2), vec_to_pos3D(min_corner), vec_to_pos3D(max_corner)):
+            if line_intersects_aabb(p1, p2, vec_to_pos3D(min_corner), vec_to_pos3D(max_corner)):
                 return True
         elif t == "sphere":
             radius = obj["radius"]
-            if line_intersects_sphere(vec_to_pos3D(p1), vec_to_pos3D(p2), vec_to_pos3D(pos), radius):
+            if line_intersects_sphere(p1, p2, vec_to_pos3D(pos), radius):
                 return True
         elif t == "cylinder":
             radius = obj["radius"]
             height = obj["height"]
-            if line_intersects_cylinder(vec_to_pos3D(p1), vec_to_pos3D(p2), vec_to_pos3D(pos), height, radius):
+            if line_intersects_cylinder(p1, p2, vec_to_pos3D(pos), height, radius):
                 return True
     return False
 
@@ -133,17 +125,19 @@ def update_plot(val=None):
     except Exception as e:
         print("Error loading scene:", e)
         shapes = []
-
-    for i, slider in enumerate(sliders):
-        dh_params[i][0] = slider.val
-
+    theta = [np.deg2rad(float(slider.val)) for slider in sliders]
     render_scene(ax, shapes)
-    points = forward_kinematics(dh_params)
+    points = forward_kinematics(theta, robot)
     in_collision = False
-    for p in range(len(points)-1):
+    for p in range(len(points) - 1):
         in_collision |= check_collision(points[p], points[p+1],shapes)
-    ax.plot(points[:,0], points[:,1], points[:,2], '-o', lw=2, color='black')
 
+    # Extract X, Y, Z for plotting
+    xs = [pt.x for pt in points]
+    ys = [pt.y for pt in points]
+    zs = [pt.z for pt in points]
+
+    ax.plot(xs, ys, zs, '-o', lw=2, color='black')
     ax.set_xlim(-SCENE_LIMIT, SCENE_LIMIT)
     ax.set_ylim(-SCENE_LIMIT, SCENE_LIMIT)
     ax.set_zlim(0, SCENE_LIMIT*2)
@@ -156,10 +150,11 @@ fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
 dh_params = load_dh_params(DH_FILE_PATH)
+robot = RobotInfo(len(dh_params),dh_params)
 
 sliders = []
 slider_ax_start = 0.25
-for i in range(len(dh_params)):
+for i in range(robot.dof):
     ax_slider = plt.axes([0.1, slider_ax_start - i*0.04, 0.8, 0.03])
     slider = Slider(ax_slider, f'θ{i+1} (°)', -180, 180, valinit=0)
     slider.on_changed(update_plot)
