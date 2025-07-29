@@ -1,8 +1,11 @@
-#include "../../src/types.h"
-#include "../../src/random_utils.h"
-#include "../../src/robomath_utils.h"
+#ifndef PARTICLE_SWARM_OPTIMIZATION_H
+#define PARTICLE_SWARM_OPTIMIZATION_H
 
-plotPoint particleSwarmOptimization(int popl, int itrn, vector<vector <float>> popArr, RobotInfo robot){
+#include "../src/types.h"
+#include "../src/random_utils.h"
+#include "../src/robomath_utils.h"
+
+plotPoint particleSwarmOptimization(int popl, int itrn, vector<vector <float>> popArr, RobotInfo robot, bool return_history = false) {
     typedef struct particle{
         float fitness;
         float p_best_fitness;
@@ -43,11 +46,11 @@ plotPoint particleSwarmOptimization(int popl, int itrn, vector<vector <float>> p
         if(g_best.fitness > popData[0].fitness){
             g_best = popData[0];
         }
-        //cout << gen << "\t" << g_best.fitness << "\n";
-
-        //plotData.iteration.push_back(gen);
-        //plotData.fitness.push_back(g_best.fitness);
-
+        if(return_history){
+            plotData.fitness_history.push_back(g_best.fitness);
+            plotData.distance_history.push_back(distance(forward_kinematics(g_best.position, robot).back(), robot.destination));
+            plotData.angular_history.push_back(distance(g_best.position, robot.joint_angle));
+        }
         for(particle &p:popData){
             p_vel = p.velocity;
             p_pos = p.position;
@@ -78,3 +81,5 @@ plotPoint particleSwarmOptimization(int popl, int itrn, vector<vector <float>> p
     plotData.name = "PSO";
     return plotData;
 }
+
+#endif

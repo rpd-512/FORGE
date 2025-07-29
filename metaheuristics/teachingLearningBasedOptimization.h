@@ -1,8 +1,11 @@
-#include "../../src/types.h"
-#include "../../src/random_utils.h"
-#include "../../src/robomath_utils.h"
+#ifndef TEACHING_LEARNING_BASED_OPTIMIZATION_H
+#define TEACHING_LEARNING_BASED_OPTIMIZATION_H
 
-plotPoint teachingLearningBasedOptimization(int popl, int itrn, vector<vector <float>> popArr, RobotInfo robot){
+#include "../src/types.h"
+#include "../src/random_utils.h"
+#include "../src/robomath_utils.h"
+
+plotPoint teachingLearningBasedOptimization(int popl, int itrn, vector<vector <float>> popArr, RobotInfo robot, bool return_history = false) {
     plotPoint plotData;
     float tf = 2;
 
@@ -31,10 +34,11 @@ plotPoint teachingLearningBasedOptimization(int popl, int itrn, vector<vector <f
 
         init_classData = classData;
         tchrChromo = classData[0];
-        //plotData.iteration.push_back(gen);
-        //plotData.fitness.push_back(tchrChromo.fitness);
-
-        //cout << gen << "\t" << tchrChromo.fitness << endl;
+        if(return_history){
+            plotData.fitness_history.push_back(tchrChromo.fitness);
+            plotData.distance_history.push_back(distance(forward_kinematics(tchrChromo.gene, robot).back(), robot.destination));
+            plotData.angular_history.push_back(distance(tchrChromo.gene, robot.joint_angle));
+        }
 
         /*Teaching Phase*/
         for(int d=0;d<dim;d++){mean_list[d] = 0;}
@@ -84,3 +88,5 @@ plotPoint teachingLearningBasedOptimization(int popl, int itrn, vector<vector <f
     plotData.name = "TLBO";
     return plotData;
 }
+
+#endif

@@ -1,8 +1,11 @@
-#include "../../src/types.h"
-#include "../../src/random_utils.h"
-#include "../../src/robomath_utils.h"
+#ifndef DIFFERENTIAL_EVOLUTION_H
+#define DIFFERENTIAL_EVOLUTION_H
 
-plotPoint differentialEvolutionAlgorithm(int popl, int itrn, vector<vector <float>> popArr, RobotInfo robot){
+#include "../src/types.h"
+#include "../src/random_utils.h"
+#include "../src/robomath_utils.h"
+
+plotPoint differentialEvolutionAlgorithm(int popl, int itrn, vector<vector <float>> popArr, RobotInfo robot, bool return_history = false) {
     plotPoint plotData;
     float sf = 0.5;
     float crossProb = 0.75;
@@ -26,9 +29,11 @@ plotPoint differentialEvolutionAlgorithm(int popl, int itrn, vector<vector <floa
         });
 
         bestPop = popData[0];
-        //plotData.iteration.push_back(gen);
-        //plotData.fitness.push_back(bestPop.fitness);
-
+        if(return_history){
+            plotData.fitness_history.push_back(bestPop.fitness);
+            plotData.distance_history.push_back(distance(forward_kinematics(bestPop.gene, robot).back(), robot.destination));
+            plotData.angular_history.push_back(distance(bestPop.gene, robot.joint_angle));
+        }
         for(int p=0; p<popl;p++){
             int r1 =randint(0,popl-1);
             int r2 =randint(0,popl-1);
@@ -66,3 +71,5 @@ plotPoint differentialEvolutionAlgorithm(int popl, int itrn, vector<vector <floa
     plotData.name = "DE";
     return plotData;
 }
+
+#endif

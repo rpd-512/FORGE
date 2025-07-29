@@ -1,8 +1,11 @@
-#include "../../src/types.h"
-#include "../../src/random_utils.h"
-#include "../../src/robomath_utils.h"
+#ifndef SOCIAL_GROUP_OPTIMIZATION_H
+#define SOCIAL_GROUP_OPTIMIZATION_H
 
-plotPoint socialGroupOptimization(int popl, int itrn, vector<vector <float>> popArr, RobotInfo robot){
+#include "../src/types.h"
+#include "../src/random_utils.h"
+#include "../src/robomath_utils.h"
+
+plotPoint socialGroupOptimization(int popl, int itrn, vector<vector <float>> popArr, RobotInfo robot, bool return_history = false) {
     plotPoint plotData;
     float c_val = 1.2;
    
@@ -26,8 +29,11 @@ plotPoint socialGroupOptimization(int popl, int itrn, vector<vector <float>> pop
         });
 
         g_best = popData[0];
-        //plotData.iteration.push_back(gen);
-        //plotData.fitness.push_back(g_best.fitness);
+        if(return_history){
+            plotData.fitness_history.push_back(g_best.fitness);
+            plotData.distance_history.push_back(distance(forward_kinematics(g_best.gene, robot).back(), robot.destination));
+            plotData.angular_history.push_back(distance(g_best.gene, robot.joint_angle));
+        }
         /*Improving Phase*/
         for(int p=0; p<popl;p++){
             vector <float> x_new = popData[p].gene;
@@ -80,3 +86,5 @@ plotPoint socialGroupOptimization(int popl, int itrn, vector<vector <float>> pop
     plotData.name = "SGO";
     return plotData;
 }
+
+#endif

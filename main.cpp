@@ -1,9 +1,9 @@
-#include "metaheuristics/socialGroupOptimization/main.cpp"
-#include "metaheuristics/geneticAlgorithm/main.cpp"
-#include "metaheuristics/particleSwarmOptimization/main.cpp"
-#include "metaheuristics/teachingLearningBasedOptimization/main.cpp"
-#include "metaheuristics/differentialEvolution/main.cpp"
-#include "gradientDescent/main.cpp"
+#include "metaheuristics/socialGroupOptimization.h"
+#include "metaheuristics/geneticAlgorithm.h"
+#include "metaheuristics/particleSwarmOptimization.h"
+#include "metaheuristics/teachingLearningBasedOptimization.h"
+#include "metaheuristics/differentialEvolution.h"
+#include "gradientDescent/gradientDescent.h"
 
 #include "src/io_utils.h"
 

@@ -15,6 +15,9 @@ typedef struct plotPoint{
     string name;
     double fitness;
     vector<float> best_gene;
+    vector <float> fitness_history;
+    vector <float> distance_history;
+    vector <float> angular_history;
 } plotPoint;
 
 typedef struct dh_param{
