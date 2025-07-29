@@ -1,8 +1,11 @@
+#ifndef GENETIC_ALGORITHM_H
+#define GENETIC_ALGORITHM_H
+
 #include "../../src/types.h"
 #include "../../src/random_utils.h"
 #include "../../src/robomath_utils.h"
 
-plotPoint geneticAlgorithm(int popl, int itrn, vector<vector <float>> popArr, RobotInfo robot){
+plotPoint geneticAlgorithm(int popl, int itrn, vector<vector <float>> popArr, RobotInfo robot, bool return_history = false) {
     plotPoint plotData;
     int crossValue = 3;
     float crossProb = 0.75;
@@ -32,9 +35,11 @@ plotPoint geneticAlgorithm(int popl, int itrn, vector<vector <float>> popArr, Ro
 
 
         bestPop = popData[0];
-        //plotData.iteration.push_back(gen);
-        //plotData.fitness.push_back(bestPop.fitness);
-        //cout << gen << "\t" << bestPop.fitness << endl;
+        if(return_history){
+            plotData.fitness_history.push_back(bestPop.fitness);
+            plotData.distance_history.push_back(distance(forward_kinematics(bestPop.gene, robot).back(), robot.destination));
+            plotData.angular_history.push_back(distance(bestPop.gene, robot.joint_angle));
+        }
         for(int p=0; p<popl; p++){
             vector<float>& chromoMain = popData[p].gene;
             int rand_p =randint(0,popl-1);
@@ -69,3 +74,5 @@ plotPoint geneticAlgorithm(int popl, int itrn, vector<vector <float>> popArr, Ro
     plotData.name = "GA";
     return plotData;
 }
+
+#endif

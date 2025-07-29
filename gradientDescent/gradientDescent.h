@@ -1,3 +1,6 @@
+#ifndef GRADIENT_DESCENT_H
+#define GRADIENT_DESCENT_H
+
 #include "../src/types.h"
 #include "../src/robomath_utils.h"
 
@@ -27,14 +30,12 @@ pair<vector<float>,float> partial_derivative(vector<float> angle, RobotInfo robo
     return {drvt,f_a};
 }
 
-plotPoint gradientDescent(int epoch, float alpha, vector<float> current_angle, RobotInfo robot) {
+plotPoint gradientDescent(int epoch, float alpha, vector<float> current_angle, RobotInfo robot, bool return_history = false) {
     plotPoint plotData;
     float beta1 = 0.9;
     float beta2 = 0.999;
     float epsilon = 1e-8;
     float loss = 0.0;
-    vector<double> fit;
-    vector<double> epo;
     int n = current_angle.size();
     vector<float> m(n, 0.0f);
     vector<float> v(n, 0.0f);
@@ -70,8 +71,11 @@ plotPoint gradientDescent(int epoch, float alpha, vector<float> current_angle, R
         for (float g : grad) grad_norm += g * g;
         grad_norm = sqrt(grad_norm);
         if (grad_norm < 1e-6 || loss < 0.01) break;
-        epo.push_back(t);
-        fit.push_back(loss);
+        if (return_history) {
+            plotData.fitness_history.push_back(loss);
+            plotData.distance_history.push_back(distance(updated_pos.back(), robot.destination));
+            plotData.angular_history.push_back(distance(current_angle, robot.joint_angle));
+        }
     }
     
     plotData.best_gene = current_angle;
@@ -80,3 +84,5 @@ plotPoint gradientDescent(int epoch, float alpha, vector<float> current_angle, R
 
     return plotData;
 }
+
+#endif
