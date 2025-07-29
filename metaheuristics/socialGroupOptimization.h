@@ -1,9 +1,9 @@
 #ifndef SOCIAL_GROUP_OPTIMIZATION_H
 #define SOCIAL_GROUP_OPTIMIZATION_H
 
-#include "../../src/types.h"
-#include "../../src/random_utils.h"
-#include "../../src/robomath_utils.h"
+#include "../src/types.h"
+#include "../src/random_utils.h"
+#include "../src/robomath_utils.h"
 
 plotPoint socialGroupOptimization(int popl, int itrn, vector<vector <float>> popArr, RobotInfo robot, bool return_history = false) {
     plotPoint plotData;

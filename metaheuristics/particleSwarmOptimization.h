@@ -1,9 +1,9 @@
 #ifndef PARTICLE_SWARM_OPTIMIZATION_H
 #define PARTICLE_SWARM_OPTIMIZATION_H
 
-#include "../../src/types.h"
-#include "../../src/random_utils.h"
-#include "../../src/robomath_utils.h"
+#include "../src/types.h"
+#include "../src/random_utils.h"
+#include "../src/robomath_utils.h"
 
 plotPoint particleSwarmOptimization(int popl, int itrn, vector<vector <float>> popArr, RobotInfo robot, bool return_history = false) {
     typedef struct particle{

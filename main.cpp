@@ -1,7 +1,7 @@
 #include "metaheuristics/socialGroupOptimization.h"
 #include "metaheuristics/geneticAlgorithm.h"
 #include "metaheuristics/particleSwarmOptimization.h"
-#include "metaheuristics/teachingLearningBasedOptimizationn.h"
+#include "metaheuristics/teachingLearningBasedOptimization.h"
 #include "metaheuristics/differentialEvolution.h"
 #include "gradientDescent/gradientDescent.h"
 
