@@ -1,44 +1,38 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include "../metaheuristics/teachingLearningBasedOptimization/main.cpp"
-#include "../metaheuristics/socialGroupOptimization/main.cpp"
-#include "../metaheuristics/geneticAlgorithm/main.cpp"
-#include "../metaheuristics/particleSwarmOptimization/main.cpp"
-#include "../metaheuristics/differentialEvolution/main.cpp"
-#include "../gradientDescent/main.cpp"
+#include "../metaheuristics/teachingLearningBasedOptimization.h"
+#include "../metaheuristics/socialGroupOptimization.h"
+#include "../metaheuristics/geneticAlgorithm.h"
+#include "../metaheuristics/particleSwarmOptimization.h"
+#include "../metaheuristics/differentialEvolution.h"
+#include "../gradientDescent/gradientDescent.h"
 
 namespace py = pybind11;
 
 PYBIND11_MODULE(designer_modules_cpp, m) {
-    py::class_<position3D>(m, "position3D")
-        .def(py::init([](float x, float y, float z) {
-            return position3D{x, y, z};
-        }))
-        .def_readwrite("x", &position3D::x)
-        .def_readwrite("y", &position3D::y)
-        .def_readwrite("z", &position3D::z);
-
-    py::class_<dh_param>(m, "dh_param")
-        .def(py::init([](double a, double d, double alpha) {
-            return dh_param{a, d, alpha};
-        }), py::arg("a"), py::arg("d"), py::arg("alpha"))
-        .def_readwrite("a", &dh_param::a)
-        .def_readwrite("d", &dh_param::d)
-        .def_readwrite("alpha", &dh_param::alpha);
-
+    m.doc() = "FORGE: Formation of Optimized Robotic Groundtruth Examples";
+    py::class_<plotPoint>(m, "PlotPoint")
+        .def(py::init<>())
+        .def_readwrite("name", &plotPoint::name)
+        .def_readwrite("fitness", &plotPoint::fitness)
+        .def_readwrite("best_gene", &plotPoint::best_gene)
+        .def_readwrite("fitness_history", &plotPoint::fitness_history)
+        .def_readwrite("distance_history", &plotPoint::distance_history)
+        .def_readwrite("angular_history", &plotPoint::angular_history);
     py::class_<RobotInfo>(m, "RobotInfo")
-        .def(py::init([](int dof, const std::vector<dh_param>& dh_params) {
-            RobotInfo r;
-            r.dof = dof;
-            r.dh_params = dh_params;
-            return r;
-        }), py::arg("dof"), py::arg("dh_params"))
+        .def(py::init<>())
         .def_readwrite("dof", &RobotInfo::dof)
-        .def_readwrite("dh_params", &RobotInfo::dh_params);
-        
-        m.def("line_intersects_aabb", &line_intersects_aabb);
-        m.def("line_intersects_sphere", &line_intersects_sphere);
-        m.def("line_intersects_cylinder", &line_intersects_cylinder);
-        m.def("forward_kinematics", &forward_kinematics);
-        m.def("dh_transform", &dh_transform_py);
+        .def_readwrite("name", &RobotInfo::name)
+        .def_readwrite("dh_params", &RobotInfo::dh_params)
+        .def_readwrite("joint_angle", &RobotInfo::joint_angle)
+        .def_readwrite("destination", &RobotInfo::destination)
+        .def_readwrite("init_pos", &RobotInfo::init_pos)
+        .def_readwrite("scene_objects", &RobotInfo::scene_objects);
+    
+    m.def("particleSwarmOptimization", &particleSwarmOptimization, "Particle Swarm Optimization Algorithm");
+    m.def("geneticAlgorithm", &geneticAlgorithm, "Genetic Algorithm");
+    m.def("socialGroupOptimization", &socialGroupOptimization, "Social Group Optimization Algorithm");
+    m.def("teachingLearningBasedOptimization", &teachingLearningBasedOptimization, "Teaching Learning Based Optimization Algorithm");
+    m.def("differentialEvolutionAlgorithm", &differentialEvolutionAlgorithm, "Differential Evolution Algorithm");
+    m.def("gradientDescent", &gradientDescent, "Gradient Descent Algorithm");
 }
