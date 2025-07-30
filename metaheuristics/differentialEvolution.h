@@ -42,7 +42,7 @@ plotPoint differentialEvolutionAlgorithm(int popl, int itrn, vector<vector <floa
             vector <float> chromoRa_2 = popData[r2].gene;
             //---mutation----//
             vector <float> chromoMutate;
-            for(int ch=0;ch<chromoMain.size();ch++){
+            for(size_t ch=0;ch<chromoMain.size();ch++){
                 chromoMutate.push_back(chromoMain[ch] + sf*(chromoRa_1[ch] - chromoRa_2[ch]));
             }
 

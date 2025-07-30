@@ -57,7 +57,7 @@ plotPoint particleSwarmOptimization(int popl, int itrn, vector<vector <float>> p
             p_bes = p.p_best_position;
             g_pos = g_best.position;
             
-            for(int e=0; e<p_pos.size();e++){
+            for(size_t e=0; e<p_pos.size();e++){
                 //mutate velocity
                 p_vel[e] *= uniform(0.8,1.2);
 
