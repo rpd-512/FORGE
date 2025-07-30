@@ -15,7 +15,7 @@ pair<vector<float>,float> partial_derivative(vector<float> angle, RobotInfo robo
     }
     vector<float> drvt(angle.size());
 
-    for (int i = 0; i < angle.size(); ++i) {
+    for (size_t i = 0; i < angle.size(); ++i) {
         vector<float> perturbed = angle;
         perturbed[i] += h;
 
