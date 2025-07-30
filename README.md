@@ -181,13 +181,18 @@ FORGE/
 │   ├── socialGroupOptimization.h
 │   └── teachingLearningBasedOptimization.h
 │
+├── experiments/                       # Experiment files
+│   ├── algorithm_binding.cpp          # Pybind11 bindings for optimisation algorithms
+│   ├── algoritm_modules_cpp.cpyth...  # Compiled Python module for algorithms
+│   ├── statistics                     # Statistical outputs
+│   └── graphs/                        # Graphic outputs
+│
 ├── scene_designer/                    # Scene designer tool with collision bindings
 │   ├── Designer.py                    # Interactive 3D scene design with sliders
 │   ├── designer_bindings.cpp          # Pybind11 bindings for collision functions
 │   ├── designer_modules_cpp.cpyth...  # Compiled Python module for collisions
 │   ├── example_scene.json             # Example 3D scene layout
-│   ├── Makefile
-│   └── __pycache__/
+│   └── Makefile
 │
 ├── src/                                # Core utility functions and headers
 │   ├── collision_utils.h
@@ -196,6 +201,7 @@ FORGE/
 │   ├── random_utils.h
 │   ├── robomath_utils.h
 │   └── types.h
+│
 └── README.md                 # You're reading it!
 
 ```

@@ -6,6 +6,7 @@
 #include "../metaheuristics/particleSwarmOptimization.h"
 #include "../metaheuristics/differentialEvolution.h"
 #include "../gradientDescent/gradientDescent.h"
+#include "../src/random_utils.h"
 
 namespace py = pybind11;
 
@@ -35,4 +36,5 @@ PYBIND11_MODULE(designer_modules_cpp, m) {
     m.def("teachingLearningBasedOptimization", &teachingLearningBasedOptimization, "Teaching Learning Based Optimization Algorithm");
     m.def("differentialEvolutionAlgorithm", &differentialEvolutionAlgorithm, "Differential Evolution Algorithm");
     m.def("gradientDescent", &gradientDescent, "Gradient Descent Algorithm");
+    m.def("generateChromosome", &generateChromosome, "Generate random chromosomes for the population");
 }
