@@ -163,28 +163,28 @@ FORGE/
 ├── LICENSE                             # Project license
 ├── Makefile                            # Makefile for building
 ├── main.cpp                            # Entry point for IK/robotics experiments
-├── visualise_fk_csv.py                # Visualizer to display FK output from CSV
+├── visualise_fk_csv.py                 # Visualizer to display FK output from CSV
 │
-├── example_dh_parameters/             # DH parameter YAML files for various robots
+├── example_dh_parameters/              # DH parameter YAML files for various robots
 │   ├── fanuc_m20ia.yaml
 │   ├── kawasaki_bx200l.yaml
 │   ├── kuka_youbot.yaml
 │   └── tm5_700.yaml
 │
 ├── gradientDescent/
-│   └── main.cpp                        # Gradient Descent implementation
+│   └── gradientDescent.h              # Gradient Descent implementation
 │
 ├── metaheuristics/                    # Metaheuristic algorithm implementations
-│   ├── differentialEvolution/
-│   ├── geneticAlgorithm/
-│   ├── particleSwarmOptimization/
-│   ├── socialGroupOptimization/
-│   └── teachingLearningBasedOptimization/
+│   ├── differentialEvolution.h
+│   ├── geneticAlgorithm.h
+│   ├── particleSwarmOptimization.h
+│   ├── socialGroupOptimization.h
+│   └── teachingLearningBasedOptimization.h
 │
 ├── scene_designer/                    # Scene designer tool with collision bindings
 │   ├── Designer.py                    # Interactive 3D scene design with sliders
-│   ├── collision_bindings.cpp         # Pybind11 bindings for collision functions
-│   ├── collision_cpp.cpython-310-...  # Compiled Python module for collisions
+│   ├── designer_bindings.cpp          # Pybind11 bindings for collision functions
+│   ├── designer_modules_cpp.cpyth...  # Compiled Python module for collisions
 │   ├── example_scene.json             # Example 3D scene layout
 │   ├── Makefile
 │   └── __pycache__/
