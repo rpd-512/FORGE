@@ -18,9 +18,10 @@ if len(sys.argv) < 3:
 scene_file = sys.argv[1]
 dh_params_file = sys.argv[2]
 
+robotname = dh_params_file.split('/')[-1].split('.')[0]
 
 robot = forge.RobotInfo()
-robot.name = "fanuc_m20ia"
+robot.name = robotname
 robot.dh_params = load_dh_params(dh_params_file)
 robot.dof = len(robot.dh_params)
 robot.scene_objects = load_scene(scene_file)
@@ -84,8 +85,8 @@ def run_analysis(algorithm_func, algo_name, runs=1000):
     # === Plotting Distributions for Each Joint ===
     fig, axs = plt.subplots(robot.dof, 1, figsize=(8, 2.5 * robot.dof))
     fig.suptitle(f'Joint Angle Distributions - {algo_name}', fontsize=15)
-    with open(f'analysis.txt', 'a') as f:
-        f.write(outp)
+    #with open(f'statistics/analysis.txt', 'a') as f:
+    #    f.write(outp)
     for i in range(robot.dof):
         joint_data = genes_array[:, i]
         mu, sigma = means[i], stds[i]
@@ -108,7 +109,7 @@ def run_analysis(algorithm_func, algo_name, runs=1000):
 
 # Run for all algorithms
 if __name__ == "__main__":
-    with open(f'analysis.txt', 'w') as f:
+    with open(f'statistics/analysis.txt', 'w') as f:
         pass
     for algo_name, algo_func in algorithms.items():
         run_analysis(algo_func, algo_name,1000)
