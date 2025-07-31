@@ -11,7 +11,7 @@ PYTHON_EXT_SUFFIX := $(shell python3-config --extension-suffix)
 EIGEN_INCLUDE = /usr/include/eigen3
 
 # Output shared object
-TARGET = algoritm_modules_cpp$(PYTHON_EXT_SUFFIX)
+TARGET = algorithm_modules_cpp$(PYTHON_EXT_SUFFIX)
 
 # Source file
 SRCS = algorithm_bindings.cpp
@@ -32,3 +32,6 @@ $(TARGET): $(SRCS)
 
 clean:
 	rm -f *.so *.o $(TARGET)
+
+recompile:
+	make clean && make
