@@ -39,15 +39,21 @@ plt.plot(range(len(distance_history)), distance_history, label='PSO Output', col
 plt.yscale('log')
 plt.xlabel('Iteration')
 plt.ylabel('Positional Error (mm)')
-plt.title('PSO Optimization and Gradient Descent Refinement')
+plt.title('PSO Optimization and Adam Optimizer Refinement')
 plt.grid(True, which='both', linestyle='--', linewidth=0.5)
 
+
+time_sum = 0.0
 # Run Gradient Descent
-start_time = time.time()
-gd_out = forge.gradientDescent(100, 0.001, outp.best_gene, robot, True)
-end_time = time.time()
-total_time = end_time - start_time
-print(f"Gradient Descent Time: {total_time*1e6:.3f} us")
+for _ in range(100):
+    start_time = time.time()
+    gd_out = forge.gradientDescent(100, 0.001, outp.best_gene, robot, True)
+    end_time = time.time()
+    total_time = end_time - start_time
+    time_sum+=total_time*1e6
+    print(f"Gradient Descent Time: {total_time*1e6:.3f} us")
+
+print(time_sum/100, "us")
 
 # Final error after GD
 pos = forge.forward_kinematics(gd_out.best_gene, robot)[-1]
@@ -63,5 +69,5 @@ plt.plot([p+len(distance_history) for p in range(len(gd_out.distance_history))],
 # Legend and save
 plt.legend()
 plt.tight_layout()
-plt.savefig("graphs/pso_gd_refinement.png", dpi=300)
+plt.savefig("graphs/pso_adam_refinement.png", dpi=300)
 plt.show()
