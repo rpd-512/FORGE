@@ -186,8 +186,7 @@ FORGE/
 │   ├── designer_bindings.cpp          # Pybind11 bindings for collision functions
 │   ├── designer_modules_cpp.cpyth...  # Compiled Python module for collisions
 │   ├── example_scene.json             # Example 3D scene layout
-│   ├── Makefile
-│   └── __pycache__/
+│   └── Makefile
 │
 ├── src/                                # Core utility functions and headers
 │   ├── collision_utils.h

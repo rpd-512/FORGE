@@ -30,8 +30,8 @@ plotPoint teachingLearningBasedOptimization(int popl, int itrn, vector<vector <f
         sort(classData.begin(), classData.end(), [](const chromoInfo& a, const chromoInfo& b) {
             return a.fitness < b.fitness;
         });
-        classData = {classData.begin(), classData.begin()+popl};
-
+        classData = vector<chromoInfo>(classData.begin(), classData.begin() + popl);
+        
         init_classData = classData;
         tchrChromo = classData[0];
         if(return_history){
