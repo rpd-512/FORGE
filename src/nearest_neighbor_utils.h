@@ -8,10 +8,8 @@
 #include <sstream>
 #include "debug_utils.h"
 #include <chrono>
-
-
-using std::vector;
-using std::string;
+#include <shared_mutex>
+#include <mutex>
 
 typedef struct KDNode {
     position3D point;
@@ -23,7 +21,11 @@ typedef struct KDNode {
 
 class NearestNeighbourIndex {
 public:
-    ~NearestNeighbourIndex(){clear(root);}
+    ~NearestNeighbourIndex(){
+        unique_lock<shared_mutex> lock(kd_tree_mutex);
+        clear(root);
+        nodes.clear();
+    }
 
     NearestNeighbourIndex(const RobotInfo& robot) : root(nullptr){
         string filename = robot.name + ".csv";
@@ -67,23 +69,52 @@ public:
     }
 
     void rebuild(){
-
+        unique_lock<shared_mutex> lock(kd_tree_mutex);
+        clear(root);
+        root = build(nodes, 0);
     }
 
     // Query N nearest neighbors
     vector<vector<float>> query(const position3D& target, int n){
-        // Implementation for querying the nearest neighbors
+        shared_lock<shared_mutex> lock(kd_tree_mutex);
         return vector<vector<float>>(); // Placeholder return
     };
 
     // Insert new data
-    void insert(const position3D& point, const chromoInfo& chromosome){
-        // Implementation for inserting new data into the index
+    void insert(const position3D& point, const vector<float>& chromosome) {
+        unique_lock<shared_mutex> lock(kd_tree_mutex);
+        KDNode* new_node = new KDNode{point, nullptr, nullptr, chromosome};
+        nodes.push_back(new_node);
+        insert_into_kd_tree(root, *new_node, 0);
+    }
+
+    float get_balance_score() {
+        shared_lock<shared_mutex> lock(kd_tree_mutex);
+        if (root == nullptr) return 1.0f; // Empty tree is perfectly balanced
+
+        int max_h = get_max_height(root);
+        int min_h = get_min_height(root);
+
+        if (min_h == 0 && max_h == 0) return 1.0f;
+
+        float diff = std::abs(min_h - max_h);
+        float max_height = std::max(min_h, max_h);
+
+        return 1.0f - (diff / max_height); // 1 = perfect balance
+    }
+    int get_max_depth() {
+        shared_lock<shared_mutex> lock(kd_tree_mutex);
+        return get_max_height(root);
+    }
+    int get_min_depth() {
+        shared_lock<shared_mutex> lock(kd_tree_mutex);
+        return get_min_height(root);
     }
 private:
     KDNode* root; // Root of the KDTree
     int k=3; // Dimension of the space
     vector<KDNode*> nodes; // Vector to hold all nodes for cleanup
+    shared_mutex kd_tree_mutex;
 
     void clear(KDNode* node) {
         if (!node) return;
@@ -120,13 +151,34 @@ private:
         node->left  = build(vector<KDNode*>(point_nodes.begin(), point_nodes.begin() + median), depth + 1);
         node->right = build(vector<KDNode*>(point_nodes.begin() + median + 1, point_nodes.end()), depth + 1);
 
-        if (depth == 0) {
-            root = node; // Set root only at the first call
-        }
-
         return node; // return the node for recursion
     }
 
+    void insert_into_kd_tree(KDNode*& node, const KDNode& kdnode, int depth) {
+        if (node == nullptr) {
+            node = new KDNode(kdnode);
+            return;
+        }
+
+        int axis = depth % k;
+        if ((axis == 0 && kdnode.point.x < node->point.x) ||
+            (axis == 1 && kdnode.point.y < node->point.y) ||
+            (axis == 2 && kdnode.point.z < node->point.z)) {
+            insert_into_kd_tree(node->left, kdnode, depth + 1);
+        } else {
+            insert_into_kd_tree(node->right, kdnode, depth + 1);
+        }
+    }
+
+    int get_max_height(KDNode* node) {
+        if (node == nullptr) return 0;
+        return 1 + max(get_max_height(node->left), get_max_height(node->right));
+    }
+
+    int get_min_height(KDNode* node) {
+        if (node == nullptr) return 0;
+        return 1 + min(get_min_height(node->left), get_min_height(node->right));
+    }
 };
 
 #endif // NEAREST_NEIGHBOR_UTIL_H

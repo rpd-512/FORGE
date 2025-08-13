@@ -6,7 +6,7 @@
 #include "gradientDescent/gradientDescent.h"
 
 #include "src/io_utils.h"
-#include "src/nearest_neighbor_util.h"
+#include "src/nearest_neighbor_utils.h"
 
 #include <thread>
 #include <mutex>
@@ -40,7 +40,7 @@ atomic<int> dataset_size(0);
 int dataset_max_size;
 mutex mtx;  // Mutex for protecting shared resource access
 
-void gen_set(int pop, int itr, RobotInfo robot, CSVWriter& writer){
+void gen_set(int pop, int itr, RobotInfo robot, CSVWriter& writer, NearestNeighbourIndex& nn_index) {
     if (dataset_size >= dataset_max_size) {
         return; // Stop if the dataset size limit is reached
     }
@@ -98,13 +98,19 @@ void gen_set(int pop, int itr, RobotInfo robot, CSVWriter& writer){
 
     optima.best_gene = normalize_angle(optima.best_gene);
     // Append the optimized angles to the KD Tree
-
+    nn_index.insert(robot.destination, optima.best_gene);
     vector<float> inputLayer = robot.joint_angle;
     vector<float> posVector = {robot.destination.x,robot.destination.y,robot.destination.z};
     inputLayer.insert(inputLayer.end(),posVector.begin(),posVector.end());
     vector<float> outputLayer = optima.best_gene;
     string misc = optima.name; 
+    if(nn_index.get_balance_score() <= 0.75){
+        nn_index.rebuild();
+    }
     clear_screen();
+    cout << "Balance Score: " << nn_index.get_balance_score() << endl;
+    cout << "Depth Max    : " << nn_index.get_max_depth() << endl;
+    cout << "Depth Min    : " << nn_index.get_min_depth() << endl;
     cout << " _____ ___  ____   ____ _____ \n"; 
     cout << "|  ___/ _ \\|  _ \\ / ___| ____|\n"; 
     cout << "| |_ | | | | |_) | |  _|  _|  \n"; 
@@ -121,9 +127,9 @@ void gen_set(int pop, int itr, RobotInfo robot, CSVWriter& writer){
     writer.appendData(inputLayer, outputLayer, misc);
 }
 
-void thread_worker(int pop, int itr, RobotInfo robot, CSVWriter& writer){
+void thread_worker(int pop, int itr, RobotInfo robot, CSVWriter& writer, NearestNeighbourIndex& nn_index) {
     while(dataset_size < dataset_max_size){
-        gen_set(pop, itr, robot, writer);
+        gen_set(pop, itr, robot, writer, nn_index);
     }
 }
 
@@ -183,7 +189,7 @@ int main(int argc, char* argv[]){
     unsigned int cores = thread::hardware_concurrency();
     // Launch threads
     for (int i = 0; i < stoi(argv[3]); ++i) {
-        threads.emplace_back(thread_worker, ref(pop), itr, ref(robot), ref(writer));
+        threads.emplace_back(thread_worker, ref(pop), itr, ref(robot), ref(writer), ref(nn_index));
     }
 
     // Join threads (main thread waits indefinitely)
