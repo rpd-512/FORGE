@@ -6,6 +6,7 @@
 #include "gradientDescent/gradientDescent.h"
 
 #include "src/io_utils.h"
+#include "src/nearest_neighbor_util.h"
 
 #include <thread>
 #include <mutex>
@@ -67,6 +68,8 @@ void gen_set(int pop, int itr, RobotInfo robot, CSVWriter& writer){
 
 
     vector<vector <float>> randGen = generateChromosome(pop,dim);
+    // Find top 10 nearest points from destination
+    // and use them in initial population
 
     plotPoint optima, post_gd;
     optima.fitness = numeric_limits<double>::max();
@@ -94,6 +97,7 @@ void gen_set(int pop, int itr, RobotInfo robot, CSVWriter& writer){
     if(optima.fitness > 1 || SceneCollisionCheck(robot.scene_objects, forward_kinematics(optima.best_gene,robot))){return;}
 
     optima.best_gene = normalize_angle(optima.best_gene);
+    // Append the optimized angles to the KD Tree
 
     vector<float> inputLayer = robot.joint_angle;
     vector<float> posVector = {robot.destination.x,robot.destination.y,robot.destination.z};
@@ -167,6 +171,9 @@ int main(int argc, char* argv[]){
     robot.dof = robot.dh_params.size();
 
     CSVWriter writer(robot);
+    //Create KD Tree
+    NearestNeighbourIndex nn_index(robot);
+    
     dataset_size = count_lines(robot.name+".csv")-1;
     int pop = 100;
     int itr = 100;

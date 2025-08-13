@@ -109,7 +109,6 @@ void loadSceneFromJSON(const std::string& filename, RobotInfo& robot) {
 
 class CSVWriter {
 public:
-    RobotInfo robot;
     CSVWriter(const RobotInfo& robot) : robot(robot), file(robot.name+".csv", ios_base::app) {
         if (!file.is_open()) {
             cerr << "Error opening file: " << robot.name+".csv" << endl;
@@ -148,6 +147,7 @@ public:
     }
 
 private:
+    RobotInfo robot;
     ofstream file;
     size_t writeCount = 0;
 
