@@ -5,8 +5,7 @@
 #include <vector>
 #include <cmath>
 
-random_device rd;  // Seed the random number engine
-mt19937 gen(rd()); // Standard mersenne_twister_engine
+inline thread_local mt19937 gen(random_device{}());
 
 int randint(int low, int high) {
     uniform_int_distribution<> dist(low, high);
