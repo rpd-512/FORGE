@@ -114,9 +114,6 @@ void gen_set(int pop, int itr, const RobotInfo& robot_orig, CSVWriter& writer, N
         nn_index.rebuild();
     }
     clear_screen();
-    cout << "Balance Score: " << nn_index.get_balance_score() << endl;
-    cout << "Depth Max    : " << nn_index.get_max_depth() << endl;
-    cout << "Depth Min    : " << nn_index.get_min_depth() << endl;
     cout << " _____ ___  ____   ____ _____ \n"; 
     cout << "|  ___/ _ \\|  _ \\ / ___| ____|\n"; 
     cout << "| |_ | | | | |_) | |  _|  _|  \n"; 
