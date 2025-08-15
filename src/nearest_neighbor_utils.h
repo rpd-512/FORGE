@@ -209,10 +209,10 @@ private:
         float dx = target.x - node->point.x;
         float dy = target.y - node->point.y;
         float dz = target.z - node->point.z;
-        float dist_sq = dx*dx + dy*dy + dz*dz;
 
+        float dist = distance(node->point, target);
         // push into local pq; construct PriorityQNode explicitly
-        push_fixed(pq, PriorityQNode{node->point, node->angles, dist_sq}, n);
+        push_fixed(pq, PriorityQNode{node->point, node->angles, dist}, n);
 
         int axis = depth % k;
         KDNode* near_branch = nullptr;
@@ -232,7 +232,7 @@ private:
 
         // pruning: compare squared plane distance with worst squared distance in pq
         float diff = (axis == 0) ? dx : (axis == 1) ? dy : dz;
-        if ((int)pq.size() < n || diff*diff < worst_priority(pq)) {
+        if ((int)pq.size() < n || diff < worst_priority(pq)) {
             knn_search(far_branch, target, depth + 1, pq, n);
         }
     }
