@@ -2,11 +2,11 @@
 #define NEAREST_NEIGHBOR_UTIL_H
 
 #include "types.h"
+#include "robomath_utils.h"
 #include <vector>
 #include <string>
 #include <fstream>
 #include <sstream>
-#include "debug_utils.h"
 #include <chrono>
 #include <shared_mutex>
 #include <mutex>
@@ -23,7 +23,7 @@ class NearestNeighbourIndex {
 public:
     ~NearestNeighbourIndex(){
         unique_lock<shared_mutex> lock(kd_tree_mutex);
-        clear(root);
+        clear(root,0);
         nodes.clear();
     }
 
@@ -70,14 +70,29 @@ public:
 
     void rebuild(){
         unique_lock<shared_mutex> lock(kd_tree_mutex);
-        clear(root);
+        clear(root,1);
         root = build(nodes, 0);
     }
 
     // Query N nearest neighbors
     vector<vector<float>> query(const position3D& target, int n){
-        shared_lock<shared_mutex> lock(kd_tree_mutex);
-        return vector<vector<float>>(); // Placeholder return
+        // local priority queue per query -> no shared state between threads
+        PQ pq;
+
+        {
+            shared_lock<shared_mutex> lock(kd_tree_mutex);
+            knn_search(root, target, 0, pq, n);
+        }
+
+        vector<vector<float>> tmp;
+        tmp.reserve(std::min<int>(n, pq.size()));
+        while (!pq.empty()) {
+            tmp.push_back(pq.top().chromosome);
+            pq.pop();
+        }
+        std::reverse(tmp.begin(), tmp.end());
+        if ((int)tmp.size() > n) tmp.resize(n);
+        return tmp;
     };
 
     // Insert new data
@@ -114,13 +129,26 @@ private:
     KDNode* root; // Root of the KDTree
     int k=3; // Dimension of the space
     vector<KDNode*> nodes; // Vector to hold all nodes for cleanup
+    int neighbour_count; // Number of nearest neighbours to find
     shared_mutex kd_tree_mutex;
+    
+    using PQ = std::priority_queue<PriorityQNode, std::vector<PriorityQNode>, PQCompare>;
+    
+    static inline void push_fixed(PQ& pq, const PriorityQNode& it, int n) {
+        if ((int)pq.size() < n) {
+            pq.push(it);
+        } else if (it.priority < pq.top().priority) {
+            pq.pop();
+            pq.push(it);
+        }
+    }
 
-    void clear(KDNode* node) {
+    void clear(KDNode* node, int delete_flag) {
         if (!node) return;
-        clear(node->left);
-        clear(node->right);
-        delete node;
+        clear(node->left, delete_flag);
+        clear(node->right, delete_flag);
+        if (!delete_flag) {delete node;}
+        else {node->left = node->right = nullptr;}
     }
 
     vector<string> tokenize(const string& line, char delimiter) {
@@ -140,7 +168,7 @@ private:
         size_t median = point_nodes.size() / 2;
 
         // Sort points by the current axis
-        std::sort(point_nodes.begin(), point_nodes.end(),
+        sort(point_nodes.begin(), point_nodes.end(),
                 [axis](const KDNode* a, const KDNode* b) {
                     return (axis == 0) ? a->point.x < b->point.x :
                             (axis == 1) ? a->point.y < b->point.y :
@@ -169,6 +197,46 @@ private:
             insert_into_kd_tree(node->right, kdnode, depth + 1);
         }
     }
+
+    static inline float worst_priority(const PQ& pq) {
+        return pq.empty() ? std::numeric_limits<float>::infinity() : pq.top().priority;
+    }
+
+    void knn_search(KDNode* node, const position3D& target, int depth, PQ& pq, int n) {
+        if (node == nullptr) return;
+
+        // squared distance (avoid sqrt)
+        float dx = target.x - node->point.x;
+        float dy = target.y - node->point.y;
+        float dz = target.z - node->point.z;
+        float dist_sq = dx*dx + dy*dy + dz*dz;
+
+        // push into local pq; construct PriorityQNode explicitly
+        push_fixed(pq, PriorityQNode{node->point, node->angles, dist_sq}, n);
+
+        int axis = depth % k;
+        KDNode* near_branch = nullptr;
+        KDNode* far_branch = nullptr;
+        if ((axis == 0 && target.x < node->point.x) ||
+            (axis == 1 && target.y < node->point.y) ||
+            (axis == 2 && target.z < node->point.z)) {
+            near_branch = node->left;
+            far_branch  = node->right;
+        } else {
+            near_branch = node->right;
+            far_branch  = node->left;
+        }
+
+        // search nearer side first
+        knn_search(near_branch, target, depth + 1, pq, n);
+
+        // pruning: compare squared plane distance with worst squared distance in pq
+        float diff = (axis == 0) ? dx : (axis == 1) ? dy : dz;
+        if ((int)pq.size() < n || diff*diff < worst_priority(pq)) {
+            knn_search(far_branch, target, depth + 1, pq, n);
+        }
+    }
+
 
     int get_max_height(KDNode* node) {
         if (node == nullptr) return 0;

@@ -34,7 +34,7 @@ void print_vector(vector<float> vec) {
 
 void print_positions(const vector<position3D>& positions) {
     for (size_t i = 0; i < positions.size(); ++i) {
-        cout << "Joint " << i << ": ("
+        cout << "Position " << i << ": ("
              << positions[i].x << ", "
              << positions[i].y << ", "
              << positions[i].z << ")\n";

@@ -12,6 +12,7 @@
 #include <mutex>
 #include <atomic>
 
+#include "src/debug_utils.h"
 
 
 void clear_screen() {
@@ -40,7 +41,8 @@ atomic<int> dataset_size(0);
 int dataset_max_size;
 mutex mtx;  // Mutex for protecting shared resource access
 
-void gen_set(int pop, int itr, RobotInfo robot, CSVWriter& writer, NearestNeighbourIndex& nn_index) {
+void gen_set(int pop, int itr, const RobotInfo& robot_orig, CSVWriter& writer, NearestNeighbourIndex& nn_index) {
+    RobotInfo robot = robot_orig;
     if (dataset_size >= dataset_max_size) {
         return; // Stop if the dataset size limit is reached
     }
@@ -60,16 +62,18 @@ void gen_set(int pop, int itr, RobotInfo robot, CSVWriter& writer, NearestNeighb
     float phi = acos(uniform(0, 1));              // zenith angle, limits Z ≥ 0
     float r = cbrt(uniform(0, 1)) * net_radius;   // cube root for uniform radial distribution
 
-    robot.destination.x = r * sin(phi) * cos(theta);
-    robot.destination.y = r * sin(phi) * sin(theta);
-    robot.destination.z = r * cos(phi);           // ensures z ≥ 0
-
+    //robot.destination.x = r * sin(phi) * cos(theta);
+    //robot.destination.y = r * sin(phi) * sin(theta);
+    //robot.destination.z = r * cos(phi);           // ensures z ≥ 0
+    robot.destination = {100,0,0};
+    
     robot.init_pos = forward_kinematics(robot.joint_angle,robot).back();
 
+    int neighbor_count = 10;
 
-    vector<vector <float>> randGen = generateChromosome(pop,dim);
-    // Find top 10 nearest points from destination
-    // and use them in initial population
+    vector<vector <float>> nearest_points = nn_index.query(robot.destination, neighbor_count);
+    vector<vector <float>> randGen = generateChromosome(pop-nearest_points.size(),dim);
+    randGen.insert(randGen.end(), nearest_points.begin(), nearest_points.end());
 
     plotPoint optima, post_gd;
     optima.fitness = numeric_limits<double>::max();
@@ -85,7 +89,7 @@ void gen_set(int pop, int itr, RobotInfo robot, CSVWriter& writer, NearestNeighb
     plotPoint de = differentialEvolutionAlgorithm(pop,itr,randGen,robot);
     if(optima.fitness > de.fitness) optima = de;
 
-
+    // Post-optimization with Adam's Gradient Descent to refine the solution
     position3D dist = forward_kinematics(optima.best_gene, robot).back();
     optima.fitness = distance(dist, robot.destination);
     float alpha = 0.001;  // learning rate
@@ -97,14 +101,16 @@ void gen_set(int pop, int itr, RobotInfo robot, CSVWriter& writer, NearestNeighb
     if(optima.fitness > 1 || SceneCollisionCheck(robot.scene_objects, forward_kinematics(optima.best_gene,robot))){return;}
 
     optima.best_gene = normalize_angle(optima.best_gene);
+
     // Append the optimized angles to the KD Tree
     nn_index.insert(robot.destination, optima.best_gene);
+
     vector<float> inputLayer = robot.joint_angle;
     vector<float> posVector = {robot.destination.x,robot.destination.y,robot.destination.z};
     inputLayer.insert(inputLayer.end(),posVector.begin(),posVector.end());
     vector<float> outputLayer = optima.best_gene;
     string misc = optima.name; 
-    if(nn_index.get_balance_score() <= 0.75){
+    if(nn_index.get_balance_score() <= 0.8){
         nn_index.rebuild();
     }
     clear_screen();
@@ -127,7 +133,7 @@ void gen_set(int pop, int itr, RobotInfo robot, CSVWriter& writer, NearestNeighb
     writer.appendData(inputLayer, outputLayer, misc);
 }
 
-void thread_worker(int pop, int itr, RobotInfo robot, CSVWriter& writer, NearestNeighbourIndex& nn_index) {
+void thread_worker(int pop, int itr, const RobotInfo& robot, CSVWriter& writer, NearestNeighbourIndex& nn_index) {
     while(dataset_size < dataset_max_size){
         gen_set(pop, itr, robot, writer, nn_index);
     }
@@ -189,7 +195,7 @@ int main(int argc, char* argv[]){
     unsigned int cores = thread::hardware_concurrency();
     // Launch threads
     for (int i = 0; i < stoi(argv[3]); ++i) {
-        threads.emplace_back(thread_worker, ref(pop), itr, ref(robot), ref(writer), ref(nn_index));
+        threads.emplace_back(thread_worker, ref(pop), itr, cref(robot), ref(writer), ref(nn_index));
     }
 
     // Join threads (main thread waits indefinitely)

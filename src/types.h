@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <queue>
 
 using namespace std;
 
@@ -67,5 +68,18 @@ typedef struct RobotInfo{
     vector<dh_param> dh_params;
     vector<SceneObject> scene_objects; // For collision detection
 }RobotInfo;
+
+
+typedef struct PriorityQNode{
+    position3D position;
+    vector<float> chromosome;
+    float priority; // lower = higher precedence
+} PriorityQNode;
+
+typedef struct PQCompare{
+    bool operator()(const PriorityQNode& a, const PriorityQNode& b) const {
+        return a.priority < b.priority ? false : true;
+    }
+} PQCompare;
 
 #endif
