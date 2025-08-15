@@ -62,11 +62,11 @@ void gen_set(int pop, int itr, const RobotInfo& robot_orig, CSVWriter& writer, N
     float phi = acos(uniform(0, 1));              // zenith angle, limits Z ≥ 0
     float r = cbrt(uniform(0, 1)) * net_radius;   // cube root for uniform radial distribution
 
-    //robot.destination.x = r * sin(phi) * cos(theta);
-    //robot.destination.y = r * sin(phi) * sin(theta);
-    //robot.destination.z = r * cos(phi);           // ensures z ≥ 0
-    robot.destination = {100,0,0};
-    
+    robot.destination.x = r * sin(phi) * cos(theta);
+    robot.destination.y = r * sin(phi) * sin(theta);
+    robot.destination.z = r * cos(phi);           // ensures z ≥ 0
+    //robot.destination = {100,900,100};
+
     robot.init_pos = forward_kinematics(robot.joint_angle,robot).back();
 
     int neighbor_count = 10;
@@ -110,7 +110,7 @@ void gen_set(int pop, int itr, const RobotInfo& robot_orig, CSVWriter& writer, N
     inputLayer.insert(inputLayer.end(),posVector.begin(),posVector.end());
     vector<float> outputLayer = optima.best_gene;
     string misc = optima.name; 
-    if(nn_index.get_balance_score() <= 0.8){
+    if(nn_index.get_balance_score() < 0.8){
         nn_index.rebuild();
     }
     clear_screen();
