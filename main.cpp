@@ -12,9 +12,6 @@
 #include <mutex>
 #include <atomic>
 
-#include "src/debug_utils.h"
-
-
 void clear_screen() {
     #ifdef _WIN32
         system("cls");
@@ -69,7 +66,7 @@ void gen_set(int pop, int itr, const RobotInfo& robot_orig, CSVWriter& writer, N
 
     robot.init_pos = forward_kinematics(robot.joint_angle,robot).back();
 
-    int neighbor_count = 10;
+    int neighbor_count = 50;
 
     vector<vector <float>> nearest_points = nn_index.query(robot.destination, neighbor_count);
     vector<vector <float>> randGen = generateChromosome(pop-nearest_points.size(),dim);
