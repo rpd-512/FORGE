@@ -1,5 +1,9 @@
 # FORGE: Formation of Optimized Robotic Groundtruth Examples
 
+<p align="center">
+  <img src="images/logo.png" alt="ROUTE Logo" width="300"/>
+</p>
+
 FORGE is a C++-based inverse kinematics and metaheuristic-gradient descent hybrid optimization framework that uses YAML-based configuration and Eigen for matrix computations. It supports multi-core execution and is designed for robotic systems defined via Denavit–Hartenberg (DH) parameters. Additionally, it utilizes KD-Tree nearest-neighbor searches to replicate and recreate similar points, enabling consistent and high-quality dataset generation.
 
 ---
