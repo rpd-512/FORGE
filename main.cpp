@@ -36,6 +36,7 @@ int count_lines(const string& file_yaml) {
 
 atomic<int> dataset_size(0);
 int dataset_max_size;
+int core_count;
 mutex mtx;  // Mutex for protecting shared resource access
 
 void gen_set(int pop, int itr, const RobotInfo& robot_orig, CSVWriter& writer, NearestNeighbourIndex& nn_index) {
@@ -68,23 +69,30 @@ void gen_set(int pop, int itr, const RobotInfo& robot_orig, CSVWriter& writer, N
 
     int neighbor_count = 50;
 
-    vector<vector <float>> nearest_points = nn_index.query(robot.destination, neighbor_count);
+    auto [nearest_points, nearest_distance] = nn_index.query(robot.destination, neighbor_count);
+
     vector<vector <float>> randGen = generateChromosome(pop-nearest_points.size(),dim);
     randGen.insert(randGen.end(), nearest_points.begin(), nearest_points.end());
 
     plotPoint optima, post_gd;
     optima.fitness = numeric_limits<double>::max();
 
-    plotPoint pso = particleSwarmOptimization(pop,itr,randGen,robot);
-    if(optima.fitness > pso.fitness) optima = pso;
-    plotPoint ga = geneticAlgorithm(pop,itr,randGen,robot);
-    if(optima.fitness > ga.fitness) optima = ga;
-    plotPoint sgo = socialGroupOptimization(pop,itr,randGen,robot);
-    if(optima.fitness > sgo.fitness) optima = sgo;
-    plotPoint tlbo = teachingLearningBasedOptimization(pop,itr,randGen,robot);
-    if(optima.fitness > tlbo.fitness) optima = tlbo;
-    plotPoint de = differentialEvolutionAlgorithm(pop,itr,randGen,robot);
-    if(optima.fitness > de.fitness) optima = de;
+    if(nearest_distance > 100){
+        plotPoint pso = particleSwarmOptimization(pop,itr,randGen,robot);
+        if(optima.fitness > pso.fitness) optima = pso;
+        plotPoint ga = geneticAlgorithm(pop,itr,randGen,robot);
+        if(optima.fitness > ga.fitness) optima = ga;
+        plotPoint sgo = socialGroupOptimization(pop,itr,randGen,robot);
+        if(optima.fitness > sgo.fitness) optima = sgo;
+        plotPoint tlbo = teachingLearningBasedOptimization(pop,itr,randGen,robot);
+        if(optima.fitness > tlbo.fitness) optima = tlbo;
+        plotPoint de = differentialEvolutionAlgorithm(pop,itr,randGen,robot);
+        if(optima.fitness > de.fitness) optima = de;
+    }
+    else{
+        optima.best_gene = nearest_points[0];
+        optima.fitness = fitness(optima.best_gene, robot);
+    }
 
     // Post-optimization with Adam's Gradient Descent to refine the solution
     position3D dist = forward_kinematics(optima.best_gene, robot).back();
@@ -122,10 +130,11 @@ void gen_set(int pop, int itr, const RobotInfo& robot_orig, CSVWriter& writer, N
     cout << "|_|   \\___/|_| \\_\\\\____|_____|\n"; 
     cout << "Formation of Optimized Robotic Groundtruth Examples\n\n";
 
-    cout << "Thankyou for your contribution" << endl;
-    cout << "Simulated Robot: " << robot.name << endl;
-    cout << "You have successfully added " << ++dataset_size
-          << " datapoint(s) to the dataset in \"" << robot.name << ".csv\"." << endl;
+    cout << "Thank you for your contribution!" << endl;
+    cout << "Simulated Robot : " << robot.name << endl;
+    cout << "Progress        : " << ++dataset_size << " / " << dataset_max_size << " datapoints" << endl;
+    cout << "Output File     : " << robot.name << ".csv" << endl;
+    cout << "Running on      : " << core_count << " CPU cores" << endl;
 
     lock_guard<mutex> lock(mtx);
     writer.appendData(inputLayer, outputLayer, misc);
@@ -192,6 +201,7 @@ int main(int argc, char* argv[]){
     vector<thread> threads;
     unsigned int cores = thread::hardware_concurrency();
     // Launch threads
+    core_count = stoi(argv[3]);
     for (int i = 0; i < stoi(argv[3]); ++i) {
         threads.emplace_back(thread_worker, ref(pop), itr, cref(robot), ref(writer), ref(nn_index));
     }

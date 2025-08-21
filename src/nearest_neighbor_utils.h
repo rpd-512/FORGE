@@ -11,6 +11,8 @@
 #include <shared_mutex>
 #include <mutex>
 
+#include "debug_utils.h"
+
 typedef struct KDNode {
     position3D point;
     KDNode *left;
@@ -75,7 +77,7 @@ public:
     }
 
     // Query N nearest neighbors
-    vector<vector<float>> query(const position3D& target, int n){
+    pair<vector<vector<float>>, float> query(const position3D& target, int n){
         // local priority queue per query -> no shared state between threads
         PQ pq;
 
@@ -86,13 +88,14 @@ public:
 
         vector<vector<float>> tmp;
         tmp.reserve(std::min<int>(n, pq.size()));
+        float least_distance = distance(pq.top().position, target);
         while (!pq.empty()) {
             tmp.push_back(pq.top().chromosome);
             pq.pop();
         }
         std::reverse(tmp.begin(), tmp.end());
         if ((int)tmp.size() > n) tmp.resize(n);
-        return tmp;
+        return {tmp, least_distance};
     };
 
     // Insert new data
