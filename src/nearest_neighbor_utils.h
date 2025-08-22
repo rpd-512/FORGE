@@ -88,7 +88,11 @@ public:
 
         vector<vector<float>> tmp;
         tmp.reserve(std::min<int>(n, pq.size()));
-        float least_distance = distance(pq.top().position, target);
+        
+        float least_distance = pq.empty()
+            ? std::numeric_limits<float>::infinity()
+            : distance(pq.top().position, target);
+
         while (!pq.empty()) {
             tmp.push_back(pq.top().chromosome);
             pq.pop();

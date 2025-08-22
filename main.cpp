@@ -76,7 +76,6 @@ void gen_set(int pop, int itr, const RobotInfo& robot_orig, CSVWriter& writer, N
 
     plotPoint optima, post_gd;
     optima.fitness = numeric_limits<double>::max();
-
     if(nearest_distance > 100){
         plotPoint pso = particleSwarmOptimization(pop,itr,randGen,robot);
         if(optima.fitness > pso.fitness) optima = pso;
@@ -90,8 +89,7 @@ void gen_set(int pop, int itr, const RobotInfo& robot_orig, CSVWriter& writer, N
         if(optima.fitness > de.fitness) optima = de;
     }
     else{
-        optima.best_gene = nearest_points[0];
-        optima.fitness = fitness(optima.best_gene, robot);
+        optima.best_gene = nearest_points.back();
     }
 
     // Post-optimization with Adam's Gradient Descent to refine the solution
