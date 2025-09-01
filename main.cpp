@@ -89,6 +89,7 @@ void gen_set(int pop, int itr, const RobotInfo& robot_orig, CSVWriter& writer, N
         if(optima.fitness > de.fitness) optima = de;
     }
     else{
+        optima.name = "NN";
         optima.best_gene = nearest_points.back();
     }
 
