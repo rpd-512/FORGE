@@ -69,14 +69,15 @@ void gen_set(int pop, int itr, const RobotInfo& robot_orig, CSVWriter& writer, N
 
     int neighbor_count = 50;
 
-    auto [nearest_points, nearest_distance] = nn_index.query(robot.destination, neighbor_count);
+    //auto [nearest_points, nearest_distance] = nn_index.query(robot.destination, neighbor_count);
 
-    vector<vector <float>> randGen = generateChromosome(pop-nearest_points.size(),dim);
-    randGen.insert(randGen.end(), nearest_points.begin(), nearest_points.end());
+    //vector<vector <float>> randGen = generateChromosome(pop-nearest_points.size(),dim);
+    //randGen.insert(randGen.end(), nearest_points.begin(), nearest_points.end());
+    vector<vector <float>> randGen = generateChromosome(pop,dim);
 
     plotPoint optima, post_gd;
     optima.fitness = numeric_limits<double>::max();
-    if(nearest_distance > 100){
+    //if(nearest_distance > 100){
         plotPoint pso = particleSwarmOptimization(pop,itr,randGen,robot);
         if(optima.fitness > pso.fitness) optima = pso;
         plotPoint ga = geneticAlgorithm(pop,itr,randGen,robot);
@@ -87,11 +88,11 @@ void gen_set(int pop, int itr, const RobotInfo& robot_orig, CSVWriter& writer, N
         if(optima.fitness > tlbo.fitness) optima = tlbo;
         plotPoint de = differentialEvolutionAlgorithm(pop,itr,randGen,robot);
         if(optima.fitness > de.fitness) optima = de;
-    }
-    else{
-        optima.name = "NN";
-        optima.best_gene = nearest_points.back();
-    }
+    //}
+    //else{
+    //    optima.name = "NN";
+    //    optima.best_gene = nearest_points.back();
+    //}
 
     // Post-optimization with Adam's Gradient Descent to refine the solution
     position3D dist = forward_kinematics(optima.best_gene, robot).back();
@@ -112,11 +113,23 @@ void gen_set(int pop, int itr, const RobotInfo& robot_orig, CSVWriter& writer, N
     vector<float> outputLayer = optima.best_gene;
     string misc = optima.name; 
 
-    nn_index.insert(robot.destination, optima.best_gene);
-    
-    if(nn_index.get_balance_score() < 0.8){
-        nn_index.rebuild();
+    {
+        lock_guard<mutex> lock(mtx);
+        writer.appendData(inputLayer, outputLayer, misc);
     }
+
+    //nn_index.insert(robot.destination, optima.best_gene);
+    //ofstream outFile("rebuild_statistics.csv", ios::app);
+    //double bal = nn_index.get_balance_score();
+    //outFile << dataset_size << ", " << bal;
+    //if (bal < 0.8) {
+    //    nn_index.rebuild();
+    //    outFile << ", Rebuilt";
+    //} else {
+    //    outFile << ", -";
+    //}
+    //outFile << "\n";
+    //outFile.close();
 
     clear_screen();
     //cout << "Balance Score: " << nn_index.get_balance_score() << endl;
@@ -135,8 +148,6 @@ void gen_set(int pop, int itr, const RobotInfo& robot_orig, CSVWriter& writer, N
     cout << "Output File     : " << robot.name << ".csv" << endl;
     cout << "Running on      : " << core_count << " CPU cores" << endl;
 
-    lock_guard<mutex> lock(mtx);
-    writer.appendData(inputLayer, outputLayer, misc);
 }
 
 void thread_worker(int pop, int itr, const RobotInfo& robot, CSVWriter& writer, NearestNeighbourIndex& nn_index) {

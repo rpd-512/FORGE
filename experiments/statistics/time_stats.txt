@@ -1,0 +1,6 @@
+no KD trees: 69.47
+
+with KD trees:
+    balance based rebuild: 34:58
+    no rebuild: 33:57
+    regular 200 rebuild: 34:15

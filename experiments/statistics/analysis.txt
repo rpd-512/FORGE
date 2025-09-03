@@ -1,0 +1,65 @@
+=== Particle Swarm Optimization Analysis ===
+
+Joint 1: Mean = 0.1090, SD = 0.1731, Range = [0.0657, 3.2694]
+Joint 2: Mean = 2.3256, SD = 0.2024, Range = [1.9830, 6.1022]
+Joint 3: Mean = 3.6872, SD = 0.0461, Range = [3.5767, 4.8065]
+Joint 4: Mean = 0.4818, SD = 0.0154, Range = [0.1571, 0.5344]
+Joint 5: Mean = 0.1921, SD = 0.2268, Range = [0.1276, 3.5250]
+Total Time: 92.99 seconds for 1000 runs
+Average Time per Run: 0.0930 seconds
+Mean Position Distance: 0.0419, SD: 0.2884
+Best Position Distance: 0.0099
+Worst Position Distance: 4.3301
+
+=== Genetic Algorithm Analysis ===
+
+Joint 1: Mean = 3.2382, SD = 0.0993, Range = [0.0985, 3.2512]
+Joint 2: Mean = 0.7054, SD = 0.0624, Range = [0.6605, 2.6744]
+Joint 3: Mean = 3.4410, SD = 0.0060, Range = [3.4346, 3.6016]
+Joint 4: Mean = 1.1710, SD = 0.0265, Range = [0.3403, 1.1759]
+Joint 5: Mean = 0.5364, SD = 0.2458, Range = [0.4064, 6.0207]
+Total Time: 35.76 seconds for 1000 runs
+Average Time per Run: 0.0358 seconds
+Mean Position Distance: 0.0233, SD: 0.1695
+Best Position Distance: 0.0082
+Worst Position Distance: 4.4708
+
+=== Social Group Optimization Analysis ===
+
+Joint 1: Mean = 3.2332, SD = 0.1402, Range = [0.0964, 3.2666]
+Joint 2: Mean = 0.9019, SD = 0.0793, Range = [0.7224, 2.8887]
+Joint 3: Mean = 3.3326, SD = 0.0288, Range = [2.7031, 3.8735]
+Joint 4: Mean = 1.1780, SD = 0.1544, Range = [0.5098, 5.6460]
+Joint 5: Mean = 1.1455, SD = 0.7039, Range = [-0.7704, 6.2725]
+Total Time: 39.54 seconds for 1000 runs
+Average Time per Run: 0.0395 seconds
+Mean Position Distance: 0.2469, SD: 0.2246
+Best Position Distance: 0.0463
+Worst Position Distance: 5.3186
+
+=== Teaching Learning Based Optimization Analysis ===
+
+Joint 1: Mean = 0.0998, SD = 0.0005, Range = [0.0886, 0.1054]
+Joint 2: Mean = 2.2621, SD = 0.1332, Range = [2.1768, 4.6236]
+Joint 3: Mean = 2.3610, SD = 0.1479, Range = [1.9083, 5.2502]
+Joint 4: Mean = 2.6521, SD = 0.1134, Range = [2.6314, 4.7873]
+Joint 5: Mean = 0.8891, SD = 0.2835, Range = [0.0127, 6.2115]
+Total Time: 35.53 seconds for 1000 runs
+Average Time per Run: 0.0355 seconds
+Mean Position Distance: 0.0463, SD: 0.2230
+Best Position Distance: 0.0153
+Worst Position Distance: 5.3452
+
+=== Differential Evolution Analysis ===
+
+Joint 1: Mean = 0.1151, SD = 0.2218, Range = [0.0889, 3.2554]
+Joint 2: Mean = 2.1001, SD = 0.2074, Range = [0.8907, 5.1113]
+Joint 3: Mean = 3.7705, SD = 0.0755, Range = [2.8669, 4.4738]
+Joint 4: Mean = 0.5286, SD = 0.2000, Range = [0.2015, 3.6810]
+Joint 5: Mean = 0.2163, SD = 0.8085, Range = [0.0032, 6.2803]
+Total Time: 35.23 seconds for 1000 runs
+Average Time per Run: 0.0352 seconds
+Mean Position Distance: 0.1675, SD: 0.2822
+Best Position Distance: 0.0127
+Worst Position Distance: 3.2909
+
