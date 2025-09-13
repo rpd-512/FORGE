@@ -27,12 +27,12 @@ Make sure the following dependencies are installed:
 
 #### Fedora:
 ```bash
-sudo dnf install eigen3-devel yaml-cpp-devel
+sudo dnf install eigen3-devel yaml-cpp-devel nlohmann-json-devel
 ```
 
 #### Ubuntu:
 ```bash
-sudo apt install libeigen3-dev libyaml-cpp-dev
+sudo apt install libeigen3-dev libyaml-cpp-dev nlohmann-json3-dev
 ```
 
 For recompiling C++ binding in `scene_designer/`, pybind11 is required, which can be installed using:
