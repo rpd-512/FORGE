@@ -46,7 +46,8 @@ bool line_intersects_sphere(position3D p1, position3D p2, position3D center, flo
 }
 
 bool line_intersects_cylinder(position3D p1, position3D p2, position3D base, float height, float radius) {
-    float axis[3] = {1.0f, 0.0f, 0.0f};  // x-axis cylinder
+    // Use Z-axis cylinder (base at base.z, axis = (0,0,1))
+    const float axis[3] = {0.0f, 0.0f, 1.0f};
 
     float dx = p2.x - p1.x, dy = p2.y - p1.y, dz = p2.z - p1.z;
     float mx = p1.x - base.x, my = p1.y - base.y, mz = p1.z - base.z;
@@ -62,12 +63,29 @@ bool line_intersects_cylinder(position3D p1, position3D p2, position3D base, flo
     float oy = my - dot_m * axis[1];
     float oz = mz - dot_m * axis[2];
 
+    const float EPS = 1e-8f;
     float a = nx*nx + ny*ny + nz*nz;
     float b = 2.0f * (nx*ox + ny*oy + nz*oz);
     float c = ox*ox + oy*oy + oz*oz - radius*radius;
 
+    // If a is near zero -> line is (nearly) parallel to cylinder axis
+    if (fabsf(a) < EPS) {
+        // Check distance in XY (orthogonal plane) from line point to axis: if <= radius,
+        // then we need to check z-overlap of segment with cylinder height.
+        float dist2 = ox*ox + oy*oy + oz*oz; // oz included but oz is along axis removed, so oz ~ 0
+        if (ox*ox + oy*oy <= radius*radius + EPS) {
+            // Check axial projection of endpoints
+            float z1 = p1.z - base.z;
+            float z2 = p2.z - base.z;
+            float minz = fminf(z1, z2);
+            float maxz = fmaxf(z1, z2);
+            if (maxz >= 0.0f && minz <= height) return true;
+        }
+        return false;
+    }
+
     float disc = b*b - 4*a*c;
-    if (disc < 0.0f || a == 0.0f) return false;
+    if (disc < 0.0f) return false;
 
     float sqrt_disc = sqrtf(disc);
     float t1 = (-b - sqrt_disc) / (2*a);
@@ -78,7 +96,7 @@ bool line_intersects_cylinder(position3D p1, position3D p2, position3D base, flo
             float px = p1.x + t * dx;
             float py = p1.y + t * dy;
             float pz = p1.z + t * dz;
-            float proj = (px - base.x)*axis[0] + (py - base.y)*axis[1] + (pz - base.z)*axis[2];
+            float proj = pz - base.z; // since axis = z
             if (proj >= 0.0f && proj <= height) return true;
         }
     }
