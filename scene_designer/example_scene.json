@@ -7,15 +7,28 @@
     },
     {
         "type": "cylinder",
-        "position": [250, 100, 0],
-        "radius": 100,
+        "position": [550, 500, 0],
+        "radius": 200,
         "height": 550,
         "color": "pink"
     },
     {
         "type": "sphere",
-        "position": [250, 100, 550],
-        "radius": 300,
-        "color": "pink"
+        "position": [550, 500, 550],
+        "radius": 200,
+        "color": "cyan"
+    },
+    {
+        "type": "cylinder",
+        "position": [50, 500, 0],
+        "radius": 200,
+        "height": 1550,
+        "color": "green"
+    },
+    {
+        "type": "sphere",
+        "position": [50, 500, 1550],
+        "radius": 200,
+        "color": "yellow"
     }
 ]

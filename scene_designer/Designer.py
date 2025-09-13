@@ -38,18 +38,21 @@ def load_dh_params(file_path):
     return dhpar
 
 def draw_cube(ax, position, size, color='blue'):
-    x, y, z = position
+    cx, cy, cz = position
     dx, dy, dz = size
-    vertices = np.array([
-        [x, y, z],
-        [x+dx, y, z],
-        [x+dx, y+dy, z],
-        [x, y+dy, z],
-        [x, y, z+dz],
-        [x+dx, y, z+dz],
-        [x+dx, y+dy, z+dz],
-        [x, y+dy, z+dz]
-    ])
+    half = np.array([dx/2.0, dy/2.0, dz/2.0])
+    # 8 corners relative to center
+    offsets = np.array([
+        [-1,-1,-1],
+        [ 1,-1,-1],
+        [ 1, 1,-1],
+        [-1, 1,-1],
+        [-1,-1, 1],
+        [ 1,-1, 1],
+        [ 1, 1, 1],
+        [-1, 1, 1]
+    ]) * half
+    vertices = offsets + np.array([cx,cy,cz])
     faces = [
         [vertices[j] for j in [0,1,2,3]],
         [vertices[j] for j in [4,5,6,7]],
@@ -60,6 +63,7 @@ def draw_cube(ax, position, size, color='blue'):
     ]
     poly3d = Poly3DCollection(faces, facecolors=color, edgecolors='k', linewidths=1, alpha=0.6)
     ax.add_collection3d(poly3d)
+
 
 def draw_sphere(ax, position, radius, color='red'):
     u, v = np.mgrid[0:2*np.pi:24j, 0:np.pi:12j]
