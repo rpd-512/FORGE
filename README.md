@@ -277,4 +277,4 @@ Thanks to the following people for helping test the program:
 - @Shivangid2904
 
 If you use this work, please cite:
-Das, R. P. (2026). FORGE: Formation of Optimized Robotic Ground-Truth Examples. Zenodo. https://doi.org/10.5281/zenodo.19375938
+Das, R. P. (2026). FORGE: Formation of Optimized Robotic Ground-Truth Examples. Zenodo. https://doi.org/10.5281/zenodo.19396738
